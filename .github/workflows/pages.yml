@@ -1,0 +1,30 @@
+# PokéFinder's phone page on GitHub Pages (owner, 30 October 2026: "Cloudflare now charges: move it somewhere free, like GitHub").
+# Every push to main (the computer's `nube.py publish` / `nube.py` writes) and every phone search (buscar.yml) publishes the page:
+# api/state.json is made here from api/jobs, api/status.json and api/results, so nobody commits it and pushes never clash on it.
+name: Publicar página
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .github/state.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

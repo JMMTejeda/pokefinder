@@ -1,0 +1,43 @@
+# A search asked from the phone page (a GitHub issue "Buscar: <text>" opened by the owner) is searched here, on eBay's 16 sites,
+# with the same engine the page carried on Cloudflare (engine.js + the rules exported by nube.engine_data). The eBay keys are this
+# repository's encrypted secrets EBAY_APP_ID / EBAY_CERT_ID. The results go to api/results/<search id>.json and the page is
+# published again. The issue stays open: the computer's app completes the search with the other markets when it is on.
+name: Buscar desde el móvil
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: write
+  issues: write
+  actions: write
+concurrency:
+  group: buscar
+  cancel-in-progress: false
+jobs:
+  buscar:
+    if: github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'Buscar:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      NUMBER: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Buscar en eBay
+        env:
+          TITLE: ${{ github.event.issue.title }}
+          EBAY_APP_ID: ${{ secrets.EBAY_APP_ID }}
+          EBAY_CERT_ID: ${{ secrets.EBAY_CERT_ID }}
+        run: node .github/buscar.js
+      - name: Guardar y publicar
+        run: |
+          git config user.name "PokéFinder"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add api
+          git diff --cached --quiet || git commit -q -m "Búsqueda desde el móvil #$NUMBER"
+          for i in 1 2 3 4 5; do git pull -q --rebase -X theirs origin main && git push -q origin HEAD:main && break; sleep 5; done
+          gh issue edit "$NUMBER" --add-label movil-hecha
+          gh workflow run pages.yml --ref main
+      - name: Avisar del fallo
+        if: failure()
+        run: gh issue edit "$NUMBER" --add-label movil-error
