@@ -13,27 +13,54 @@ app completes the search (the issue stays open for it, labelled movil-hecha).
 The phone follows the search on its issue: one comment, edited as it goes (progress, message, and the commit holding the newest
 results); the page reads it with the phone key. Results are api/results/<search id>.json, pushed after eBay, after the markets
 and at the end, so the phone shows them while the checks go on (it reads them at raw.githubusercontent.com/<repo>/<commit>/...).
+What the engine learnt about listings (eBay checks, cannot be bought, photos) is kept between searches in PF_CACHE (buscar.yml's
+actions/cache), as the computer keeps data/app/checks.json: a listing checked in the last day is not asked about again, which
+spares eBay's daily allowance.
   python .github/buscar.py     (env: TITLE "Buscar: <text>", NUMBER, GITHUB_REPOSITORY, GH_TOKEN, EBAY_APP_ID, EBAY_CERT_ID,
-                                BRANCH, main by default)"""
-import json, os, re, subprocess, sys, threading, time, traceback, urllib.request
+                                PF_CACHE, BRANCH, main by default)"""
+import json, os, re, shutil, subprocess, sys, tempfile, threading, time, traceback, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
 HERE = os.path.dirname(os.path.abspath(__file__))   # .github
 REPO_DIR = os.path.dirname(HERE)
-MOTOR = os.path.join(HERE, "motor")
+# the engine runs from a copy outside the repository: its data files change as it works, and the repository must stay clean to
+# take the pushes of other searches before its own (31 October 2026: "charizard 4/102" could not push its results)
+MOTOR = os.path.join(os.environ.get("RUNNER_TEMP") or tempfile.gettempdir(), "pokefinder-motor")
 REPO, NUMBER, BRANCH = os.environ.get("GITHUB_REPOSITORY", ""), os.environ.get("NUMBER") or "", os.environ.get("BRANCH") or "main"
 QUERY = re.sub(r"\s+", " ", re.sub(r"^\s*Buscar:\s*", "", os.environ.get("TITLE", ""), flags=re.I)).strip()[:120]
 MARK = "<!-- pokefinder "   # the page finds the state in the comment by this (template.html phoneState)
+CACHE = os.environ.get("PF_CACHE") or ""
+KEPT = {"checks.json": ("app", "checks.json"), "images.json": ("app", "images.json"), "gone.json": ("app", "images", "gone.json")}
 
-# the eBay keys (this repository's encrypted secrets) where the engine looks for them, before it is imported: never committed
-# (only api/results is), never printed
+if os.path.isdir(MOTOR): shutil.rmtree(MOTOR)
+shutil.copytree(os.path.join(HERE, "motor"), MOTOR)
+# the eBay keys (this repository's encrypted secrets) where the engine looks for them, before it is imported: outside the
+# repository, never printed
 if os.environ.get("EBAY_APP_ID") and os.environ.get("EBAY_CERT_ID"):
     os.makedirs(os.path.join(MOTOR, ".secrets"), exist_ok=True)
     with open(os.path.join(MOTOR, ".secrets", "ebay_api.json"), "w", encoding="utf-8") as f:
         json.dump({"app_id": os.environ["EBAY_APP_ID"].strip(), "cert_id": os.environ["EBAY_CERT_ID"].strip()}, f)
 sys.path.insert(0, os.path.join(MOTOR, "screener", "scripts")); os.chdir(os.path.join(MOTOR, "screener", "scripts"))
 import motor as M, app_lib as A, nube   # noqa: E402
-from common import load, save           # noqa: E402
+from common import P, load, save        # noqa: E402
+
+def restore_cache():
+    """The last searches' checks, photos and listings that cannot be bought, joined with what the computer published."""
+    if not CACHE: return
+    for name, rel in KEPT.items():
+        got = load(os.path.join(CACHE, name))
+        if got is None: continue
+        if name == "gone.json": got = sorted(set(got) | set(load(P(*rel), []) or []))
+        save(P(*rel), got)
+
+def keep_cache():
+    """This search's checks for the next ones (checks older than two days are dropped: they are asked again anyway)."""
+    if not CACHE: return
+    os.makedirs(CACHE, exist_ok=True)
+    checks = {k: v for k, v in (load(P("app", "checks.json"), {}) or {}).items() if time.time() - (v.get("at") or 0) < 2 * 86400}
+    save(os.path.join(CACHE, "checks.json"), checks)
+    save(os.path.join(CACHE, "images.json"), {k: v for k, v in (load(P("app", "images.json"), {}) or {}).items() if k in checks})
+    save(os.path.join(CACHE, "gone.json"), load(P("app", "images", "gone.json"), []) or [])
 
 jobs_lock, say_lock = threading.Lock(), threading.Lock()
 
@@ -102,12 +129,15 @@ def push(sid, final=False):
     git("add", rel)
     if git("diff", "--cached", "--quiet", check=False).returncode:
         git("commit", "-q", "-m", f"Búsqueda desde el móvil #{NUMBER}: {QUERY}" + ("" if final else " (sigue)"))
+    why = ""
     for n in range(6):   # the computer and other phone searches push too (other files): take theirs and try again
-        git("pull", "-q", "--rebase", "-X", "theirs", "origin", BRANCH, check=False)
-        if git("push", "-q", "origin", "HEAD:" + BRANCH, check=False).returncode == 0:
-            return git("rev-parse", "HEAD").stdout.strip()
+        r = git("pull", "-q", "--rebase", "-X", "theirs", "origin", BRANCH, check=False)
+        if r.returncode: why = (r.stderr or r.stdout).strip()[-200:]; git("rebase", "--abort", check=False)
+        r = git("push", "-q", "origin", "HEAD:" + BRANCH, check=False)
+        if r.returncode == 0: return git("rev-parse", "HEAD").stdout.strip()
+        why = why or (r.stderr or r.stdout).strip()[-200:]
         time.sleep(3 * (n + 1))
-    raise RuntimeError("git push: GitHub no aceptó los resultados")
+    raise RuntimeError("git push: GitHub no aceptó los resultados: " + why)
 
 def publish_page():
     """api/state.json (what other devices see) is made by pages.yml; a push made here with GitHub's own token does not start it."""
@@ -160,8 +190,9 @@ def read_pages(jid, bdir, lo=15, hi=80, label="Leyendo"):
         return A.SITE_NAME.get(p["site"], p["site"])
     side_by_side(todo, lambda p: p["site"], read, jid, lo, hi, lambda name, n, t: f"{label}: {name} ({n} de {t} páginas)")
     empty = [p for p in todo if not (load(out(p)) or {}).get("blocked") and not (load(out(p)) or {}).get("n")]
-    if empty: put(jid, message=f"{label}: otra vez {', '.join(sorted({A.SITE_NAME.get(p['site'], p['site']) for p in empty}))}")
-    again(empty, read)
+    if empty and any((load(out(p)) or {}).get("n") for p in todo):   # no site found anything: the card is not for sale, nothing to read again
+        put(jid, message=f"{label}: otra vez {', '.join(sorted({A.SITE_NAME.get(p['site'], p['site']) for p in empty}))}")
+        again(empty, read)
 
 def read_queue(jid, queue, outdir, js, lo, hi, label, skip_site=None):
     """motor.read_queue (still for sale? can it be bought?), side by side, with the same listings left out; a listing found
@@ -181,13 +212,20 @@ def read_queue(jid, queue, outdir, js, lo, hi, label, skip_site=None):
     again([q for q in todo if (load(out(q)) or {}).get("reason") == "sin botón de compra"], read)
 
 def prefetch_photos(sid):
-    """Every listing photo downloaded at once, at its largest size (the photo checks then read them from the cache)."""
+    """Every listing photo downloaded, twelve at a time and at its largest size, while the listings are checked (the photo checks
+    then read them from the cache; motor.check_photos waits for this to end)."""
     import leer_etiqueta as E
     urls = [l["image"] for l in (load(A.search_path(sid)) or {}).get("listings", []) if l.get("image")]
     def get(u):
         try: E.image(u)
         except Exception: pass
-    with ThreadPoolExecutor(12) as ex: list(ex.map(get, urls))
+    def all_of_them():
+        with ThreadPoolExecutor(12) as ex: list(ex.map(get, urls))
+    t = threading.Thread(target=all_of_them, daemon=True); t.start()
+    check_photos = M.check_photos
+    def after_photos(*a, **kw):
+        t.join(); return check_photos(*a, **kw)
+    M.check_photos = after_photos
 
 # ---------------------------------------------------------------- the search
 def new_job(query):
@@ -204,6 +242,7 @@ def count(sid): return len((load(A.search_path(sid)) or {}).get("listings", []))
 
 def main():
     if len(QUERY) < 2: raise SystemExit("búsqueda vacía")
+    restore_cache()
     jid, sid = new_job(QUERY)
     say(progress=5, search=sid, message="GitHub la recibe. Buscando en eBay (16 países)…")
     M.cloud_on = lambda: False   # the computer's link to the page; here the comment and the pushes do that
@@ -218,6 +257,7 @@ def main():
         M.run(["app_job.py", "ebay", jid], check=False)
         say(progress=15, sha=push(sid), count=count(sid), message=f"eBay: {count(sid)} anuncios. Ahora Mercari, Rakuma, Magi, SNKRDUNK, Rakuten, Vinted…")
     M.typed(jid)
+    keep_cache()
     s = load(A.search_path(sid)) or {}
     nr = (s.get("no_results") or {}).get("not_read") or []
     say(progress=100, status="done", sha=push(sid, final=True), count=count(sid),

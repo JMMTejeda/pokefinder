@@ -2,15 +2,16 @@
 saved search, the photo of each listing, and a search box whose requests reach the computer. Since 30 October 2026 it is on GitHub
 (owner: "Cloudflare now charges: move it somewhere completely free, like GitHub"): GitHub Pages of the public repository
 settings.json "github_repo", at settings.json "cloud_url". The page is the static folder ROOT/cloud/out; what the Cloudflare
-Worker did is done by GitHub: requests are issues, live data are files under api/ in the repository, and the phone's own eBay
-search runs in GitHub Actions (ROOT/cloud/github: pages.yml, buscar.yml, buscar.js, state.py; the old worker.js is kept as history).
+Worker did is done by GitHub: requests are issues, live data are files under api/ in the repository, and the phone's own search
+runs in GitHub Actions with this app's engine, in every market (ROOT/cloud/github: pages.yml, buscar.yml, buscar.py, state.py;
+the engine is copied to the repository's .github/motor by `publish`; the old worker.js is kept as history).
 
   python nube.py build
         Writes ROOT/cloud/out/: index.html (the page, all saved searches inside it), sheets/*.jpg (the listing photos, 100 per
         sheet: one picture per 100 listings loads fast on a phone), version.json (the phone reloads when it changes), icons.
   python nube.py publish          (ROOT/cloud/publicar.bat [--no-build] = build + publish)
-        Pushes cloud/out, the workflows and the phone search's engine to the repository (local copy %LOCALAPPDATA%/PokeFinderWeb);
-        GitHub publishes it in about a minute and the phone reloads by itself.
+        Pushes cloud/out, the workflows and the phone search's engine (screener/ -> .github/motor) to the repository (local copy
+        %LOCALAPPDATA%/PokeFinderWeb); GitHub publishes it in about a minute and the phone reloads by itself.
   python nube.py pending
         Tells the page the computer is checking and prints the phone requests still waiting (JSON list; [] = nothing to do).
   python nube.py asked | reject [<request id>...]
