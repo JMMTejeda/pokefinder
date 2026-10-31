@@ -50,18 +50,11 @@ jobs:
         run: |
           pip install -q playwright==1.64.1 opencv-python-headless==5.0.0.93 numpy==2.5.4 pillow==13.0.0 tzdata==2026.6
           python -m playwright install --with-deps chromium
-      # what earlier searches learnt about listings (eBay checks of the last day, cannot be bought), as the computer keeps it
-      - uses: actions/cache@v4
-        with:
-          path: ${{ runner.temp }}/pokefinder-cache
-          key: pokefinder-${{ github.run_id }}
-          restore-keys: pokefinder-
       - name: Buscar en todos los mercados
         env:
           GH_TOKEN: ${{ github.token }}
           EBAY_APP_ID: ${{ secrets.EBAY_APP_ID }}
           EBAY_CERT_ID: ${{ secrets.EBAY_CERT_ID }}
-          PF_CACHE: ${{ runner.temp }}/pokefinder-cache
         run: |
           git config user.name "PokéFinder"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

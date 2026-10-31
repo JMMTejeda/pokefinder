@@ -13,11 +13,12 @@ app completes the search (the issue stays open for it, labelled movil-hecha).
 The phone follows the search on its issue: one comment, edited as it goes (progress, message, and the commit holding the newest
 results); the page reads it with the phone key. Results are api/results/<search id>.json, pushed after eBay, after the markets
 and at the end, so the phone shows them while the checks go on (it reads them at raw.githubusercontent.com/<repo>/<commit>/...).
-What the engine learnt about listings (eBay checks, cannot be bought, photos) is kept between searches in PF_CACHE (buscar.yml's
-actions/cache), as the computer keeps data/app/checks.json: a listing checked in the last day is not asked about again, which
-spares eBay's daily allowance.
+What the engine learnt about listings (eBay checks, cannot be bought, photos) is kept between searches on the repository's branch
+CACHE_BRANCH (one commit, replaced each time), as the computer keeps data/app/checks.json: a listing checked in the last day is
+not asked about again, which spares eBay's daily allowance. (GitHub's own actions/cache cannot be written by a run an issue
+started: anyone can open issues in a public repository.)
   python .github/buscar.py     (env: TITLE "Buscar: <text>", NUMBER, GITHUB_REPOSITORY, GH_TOKEN, EBAY_APP_ID, EBAY_CERT_ID,
-                                PF_CACHE, BRANCH, main by default)"""
+                                BRANCH, main by default)"""
 import json, os, re, shutil, subprocess, sys, tempfile, threading, time, traceback, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
@@ -29,7 +30,7 @@ MOTOR = os.path.join(os.environ.get("RUNNER_TEMP") or tempfile.gettempdir(), "po
 REPO, NUMBER, BRANCH = os.environ.get("GITHUB_REPOSITORY", ""), os.environ.get("NUMBER") or "", os.environ.get("BRANCH") or "main"
 QUERY = re.sub(r"\s+", " ", re.sub(r"^\s*Buscar:\s*", "", os.environ.get("TITLE", ""), flags=re.I)).strip()[:120]
 MARK = "<!-- pokefinder "   # the page finds the state in the comment by this (template.html phoneState)
-CACHE = os.environ.get("PF_CACHE") or ""
+CACHE_BRANCH = "cache-buscador"
 KEPT = {"checks.json": ("app", "checks.json"), "images.json": ("app", "images.json"), "gone.json": ("app", "images", "gone.json")}
 
 if os.path.isdir(MOTOR): shutil.rmtree(MOTOR)
@@ -44,23 +45,33 @@ sys.path.insert(0, os.path.join(MOTOR, "screener", "scripts")); os.chdir(os.path
 import motor as M, app_lib as A, nube   # noqa: E402
 from common import P, load, save        # noqa: E402
 
+def gitio(*a, inp=None):
+    return subprocess.run(("git",) + a, cwd=REPO_DIR, input=inp, capture_output=True, text=True, encoding="utf-8", errors="replace")
+
 def restore_cache():
     """The last searches' checks, photos and listings that cannot be bought, joined with what the computer published."""
-    if not CACHE: return
+    if gitio("fetch", "-q", "--depth=1", "origin", CACHE_BRANCH).returncode: return   # none yet
     for name, rel in KEPT.items():
-        got = load(os.path.join(CACHE, name))
+        r = gitio("show", f"FETCH_HEAD:{name}")
+        try: got = json.loads(r.stdout) if r.returncode == 0 else None
+        except ValueError: got = None
         if got is None: continue
         if name == "gone.json": got = sorted(set(got) | set(load(P(*rel), []) or []))
         save(P(*rel), got)
 
 def keep_cache():
-    """This search's checks for the next ones (checks older than two days are dropped: they are asked again anyway)."""
-    if not CACHE: return
-    os.makedirs(CACHE, exist_ok=True)
+    """This search's checks for the next ones (checks older than two days are dropped: they are asked again anyway): one commit
+    with no history on CACHE_BRANCH, so keeping them never makes the repository grow. The last search to end wins."""
     checks = {k: v for k, v in (load(P("app", "checks.json"), {}) or {}).items() if time.time() - (v.get("at") or 0) < 2 * 86400}
-    save(os.path.join(CACHE, "checks.json"), checks)
-    save(os.path.join(CACHE, "images.json"), {k: v for k, v in (load(P("app", "images.json"), {}) or {}).items() if k in checks})
-    save(os.path.join(CACHE, "gone.json"), load(P("app", "images", "gone.json"), []) or [])
+    files = {"checks.json": checks, "images.json": {k: v for k, v in (load(P("app", "images.json"), {}) or {}).items() if k in checks},
+             "gone.json": load(P("app", "images", "gone.json"), []) or []}
+    try:
+        tree = "".join(f"100644 blob {gitio('hash-object', '-w', '--stdin', inp=json.dumps(v, ensure_ascii=False)).stdout.strip()}\t{n}\n" for n, v in files.items())
+        commit = gitio("commit-tree", gitio("mktree", inp=tree).stdout.strip(), "-m", "Lo que el buscador sabe de los anuncios (lo usa la próxima búsqueda)").stdout.strip()
+        r = gitio("push", "-q", "-f", "origin", f"{commit}:refs/heads/{CACHE_BRANCH}")
+        if r.returncode: print("  checks not kept:", (r.stderr or r.stdout).strip()[-200:])
+    except Exception as e:
+        print("  checks not kept:", type(e).__name__, e)
 
 jobs_lock, say_lock = threading.Lock(), threading.Lock()
 
