@@ -273,6 +273,7 @@ def request_of(i):
     r = {"id": f"i{i['number']}", "at": int(dt.datetime.fromisoformat(i["created_at"].replace("Z", "+00:00")).timestamp() * 1000), "status": st}
     r["group" if m.group(1).lower() == "grupo" else "query"] = m.group(2).strip()[:120]
     if "movil-hecha" in lab: r["phone"] = "done"
+    elif "movil-error" in lab: r["phone"] = "error"
     return r
 
 def state():
@@ -342,7 +343,7 @@ def setup():
     R = repo()
     if not R: sys.exit("Falta settings.json github_repo.")
     for name, (color, desc) in {"tomada": ("1f6feb", "El ordenador la tiene"), "esperando-ok": ("d4a72c", "Esperando el OK del dueño en Claude"),
-                                "movil-hecha": ("2da44e", "Buscada en eBay desde GitHub"), "movil-error": ("cf222e", "La búsqueda en GitHub falló"),
+                                "movil-hecha": ("2da44e", "Buscada en todos los mercados desde GitHub"), "movil-error": ("cf222e", "La búsqueda en GitHub falló"),
                                 "rechazada": ("6e7781", "El dueño dijo que no"), "reemplazada": ("6e7781", "Pedida otra vez")}.items():
         run("gh", "label", "create", name, "--color", color, "--description", desc, "--repo", R, "--force", cwd=ROOT)
     eb = load(os.path.join(ROOT, ".secrets", "ebay_api.json"), {}) or {}
@@ -358,9 +359,12 @@ def link():
     print(f"{site()}/?k={t}" if t else f"{site()}/   (sin clave: para pedir búsquedas desde el móvil hace falta phone_token en .secrets/cloud.json)")
 
 def waiting_requests(st=None):
-    """Phone requests nobody has taken yet: "new" (just asked) or "asked" (Claude asked the owner for the OK)."""
+    """Phone requests nobody has taken yet: "new" (just asked) or "asked" (Claude asked the owner for the OK). A search GitHub is
+    still doing for the phone (buscar.yml: no movil-hecha / movil-error label yet, asked less than 45 minutes ago, its time limit)
+    waits until it ends: the computer then completes it instead of searching it at the same time (31 October 2026)."""
     st = st or state()
-    return [r for r in st.get("requests", []) if r.get("status") in ("new", "asked") and (r.get("query") or r.get("group"))]
+    github = lambda r: r.get("query") and not r.get("phone") and time.time() * 1000 - r["at"] < 45 * 60e3
+    return [r for r in st.get("requests", []) if r.get("status") in ("new", "asked") and (r.get("query") or r.get("group")) and not github(r)]
 
 def pending_cmd():
     """For the scheduled check: tells the page Claude is checking (heartbeat) and prints the waiting requests (JSON list)."""

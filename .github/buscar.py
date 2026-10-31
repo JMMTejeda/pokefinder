@@ -75,34 +75,48 @@ def api(path, method="GET", body=None):
         return json.loads(body) if body else None
 
 STATE = {"progress": 0, "status": "running", "message": "", "sha": None, "search": None, "count": None}
-SENT = {"comment": None, "at": 0, "stage": None, "body": None, "later": None}
+SENT = {"comment": None, "body": None}
+send_lock, wake = threading.Lock(), threading.Event()
 
 def say(**kw):
-    """The search's state on the issue (one comment, edited), which the phone's bar and results follow: at once when the stage or
-    the results change, else every 3 seconds at most (what comes in between is sent at the end of those 3 seconds)."""
+    """The search's new state for the phone. Only remembered here: the sender (below) puts it on the issue at once when the stage or
+    the results change, else every 3 seconds, so no browser ever waits for GitHub's API."""
     with say_lock:
+        before = (STATE["status"], STATE["sha"])
         p = kw.pop("progress", None)
         STATE.update({k: v for k, v in kw.items() if v is not None})
         if p is not None: STATE["progress"] = p if STATE["status"] == "done" else max(STATE["progress"], p)   # the bar never goes back
-        if not NUMBER: return
-        if (STATE["status"], STATE["sha"]) == SENT["stage"] and time.time() - SENT["at"] < 3:
-            if not SENT["later"]:
-                SENT["later"] = threading.Timer(3 - (time.time() - SENT["at"]), lambda: (SENT.update(later=None), say()))
-                SENT["later"].daemon = True; SENT["later"].start()
-            return
+        if (STATE["status"], STATE["sha"]) != before: wake.set()
+
+def send(tries=1):
+    """The state on the issue: one comment, edited (the one buscar.yml's first step opened). True when GitHub has it."""
+    if not NUMBER: return True
+    with send_lock:
+        with say_lock: doc = dict(STATE)
+        body = f"**{doc['progress']} %** · {doc['message']}\n\n{MARK}{json.dumps(doc, ensure_ascii=False)} -->"
+        for n in range(tries):
+            if body == SENT["body"]: return True
+            try:
+                if not SENT["comment"]:   # only GitHub's own comment: anyone can comment on a public repository (the page checks too)
+                    SENT["comment"] = next((c["id"] for c in api(f"/issues/{NUMBER}/comments?per_page=100") or []
+                                            if MARK in (c.get("body") or "") and (c.get("user") or {}).get("login") == "github-actions[bot]"), None)
+                if SENT["comment"]: api(f"/issues/comments/{SENT['comment']}", "PATCH", {"body": body})
+                else: SENT["comment"] = api(f"/issues/{NUMBER}/comments", "POST", {"body": body})["id"]
+                SENT["body"] = body
+                return True
+            except Exception as e:
+                print("  comment not updated:", type(e).__name__, e, flush=True)
+                if n + 1 < tries: time.sleep(2 * 2 ** n)
+        return False
+
+def sender():
+    while True:
+        wake.wait(3); wake.clear()
         send()
 
-def send():
-    body = f"**{STATE['progress']} %** · {STATE['message']}\n\n{MARK}{json.dumps(STATE, ensure_ascii=False)} -->"
-    if body == SENT["body"]: return
-    try:
-        if not SENT["comment"]:   # buscar.yml's first step opened it
-            SENT["comment"] = next((c["id"] for c in api(f"/issues/{NUMBER}/comments?per_page=100") or [] if MARK in (c.get("body") or "")), None)
-        if SENT["comment"]: api(f"/issues/comments/{SENT['comment']}", "PATCH", {"body": body})
-        else: SENT["comment"] = api(f"/issues/{NUMBER}/comments", "POST", {"body": body})["id"]
-        SENT.update(at=time.time(), stage=(STATE["status"], STATE["sha"]), body=body)
-    except Exception as e:
-        print("  comment not updated:", type(e).__name__, e, flush=True)
+def finish(**kw):
+    """The last state (done or error): sent at once, and tried again for half a minute if GitHub does not take it."""
+    say(**kw); send(tries=5)
 
 def phone_job(jid):
     """motor.put's link to the phone: the job's progress and message, as the computer's app shows them."""
@@ -128,7 +142,7 @@ def push(sid, final=False):
     with open(os.path.join(REPO_DIR, rel), "w", encoding="utf-8") as h: json.dump(doc, h, ensure_ascii=False, separators=(",", ":"))
     git("add", rel)
     if git("diff", "--cached", "--quiet", check=False).returncode:
-        git("commit", "-q", "-m", f"Búsqueda desde el móvil #{NUMBER}: {QUERY}" + ("" if final else " (sigue)"))
+        git("commit", "-q", "-m", f"Búsqueda desde el móvil{' #' + NUMBER if NUMBER else ''}: {QUERY}" + ("" if final else " (sigue)"))
     why = ""
     for n in range(6):   # the computer and other phone searches push too (other files): take theirs and try again
         r = git("pull", "-q", "--rebase", "-X", "theirs", "origin", BRANCH, check=False)
@@ -154,26 +168,32 @@ def side_by_side(items, host, read, jid, lo, hi, label):
     groups, done = {}, [0]
     for x in items: groups.setdefault(host(x), []).append(x)
     def worker(xs):
-        br = M.Browser()
-        try:
+        br = None
+        try:   # a browser that fails leaves its site unread (listed as not read), never the whole search
+            br = M.Browser()
             for x in xs:
                 name = read(br, x)
                 with jobs_lock:
                     done[0] += 1; n = done[0]
                 put(jid, progress=lo + int((hi - lo) * n / len(items)), message=label(name, n, len(items)))
+        except Exception as e:
+            M.log(f"  browser failed on {host(xs[0])}:", type(e).__name__, str(e)[:200])
         finally:
-            br.close()
+            if br: br.close()
     # the biggest sites first, so the last one to finish is not a long one started late
     with ThreadPoolExecutor(min(SIDE, len(groups))) as ex: list(ex.map(worker, sorted(groups.values(), key=len, reverse=True)))
 
 def again(items, read):
     """Pages that came back empty in the side-by-side pass, read once more alone (as the computer reads them)."""
     if not items: return
-    br = M.Browser()
+    br = None
     try:
+        br = M.Browser()
         for x in items: read(br, x)
+    except Exception as e:
+        M.log("  second reading failed:", type(e).__name__, str(e)[:200])
     finally:
-        br.close()
+        if br: br.close()
 
 def read_pages(jid, bdir, lo=15, hi=80, label="Leyendo"):
     """motor.read_pages, side by side; a page that read nothing (not blocked) is read again alone."""
@@ -185,12 +205,15 @@ def read_pages(jid, bdir, lo=15, hi=80, label="Leyendo"):
     def read(br, p):
         d = br.read(p["url"], p["js"], p.get("viewport", "tall"))
         old = load(out(p))
-        if not (old and old.get("n") and not d.get("n")): save(out(p), d)   # a second reading never replaces a fuller one
+        # a second reading never replaces a fuller one, nor a page read with one that was turned away
+        if not (old and not old.get("blocked") and (d.get("blocked") or (old.get("n") and not d.get("n")))): save(out(p), d)
         M.log(f"  page {p['i']} {p['site']}:", "BLOCKED " + str(d.get("title")) if d.get("blocked") else f"{d.get('n')} read, {len(d.get('rows', []))} kept")
         return A.SITE_NAME.get(p["site"], p["site"])
     side_by_side(todo, lambda p: p["site"], read, jid, lo, hi, lambda name, n, t: f"{label}: {name} ({n} de {t} páginas)")
-    empty = [p for p in todo if not (load(out(p)) or {}).get("blocked") and not (load(out(p)) or {}).get("n")]
-    if empty and any((load(out(p)) or {}).get("n") for p in todo):   # no site found anything: the card is not for sale, nothing to read again
+    # Mercari (drawn while scrolling) and Rakuten (10 seconds for its results) are the readers a busy machine can cut short; the
+    # others wait for their results. Read again when they found nothing while another site found something.
+    empty = [p for p in todo if p["site"] in ("mercari", "rakuten") and not (load(out(p)) or {}).get("blocked") and not (load(out(p)) or {}).get("n")]
+    if empty and any((load(out(p)) or {}).get("n") for p in todo):
         put(jid, message=f"{label}: otra vez {', '.join(sorted({A.SITE_NAME.get(p['site'], p['site']) for p in empty}))}")
         again(empty, read)
 
@@ -240,32 +263,47 @@ def new_job(query):
 
 def count(sid): return len((load(A.search_path(sid)) or {}).get("listings", []))
 
+def complete_before(sid):
+    """The search already has complete results on the page (searched before, here or on the computer). They stay until this search
+    ends, instead of eBay's or the markets' results without their checks (a refresh cut off half way would lose them)."""
+    f = os.path.join(REPO_DIR, "api", "results", sid + ".json")
+    if os.path.exists(f): return ((load(f) or {}).get("search") or {}).get("final") is not False
+    try: return f'"id":"{sid}"' in open(os.path.join(REPO_DIR, "index.html"), encoding="utf-8").read()   # the page's own searches
+    except OSError: return False
+
 def main():
     if len(QUERY) < 2: raise SystemExit("búsqueda vacía")
+    threading.Thread(target=sender, daemon=True).start()
     restore_cache()
     jid, sid = new_job(QUERY)
     say(progress=5, search=sid, message="GitHub la recibe. Buscando en eBay (16 países)…")
     M.cloud_on = lambda: False   # the computer's link to the page; here the comment and the pushes do that
     M.phone_job, M.phone_results = phone_job, lambda sids: None
     M.read_pages, M.read_queue = read_pages, read_queue
+    early = not complete_before(sid)   # results shown as they come (a refresh keeps the complete ones until the end)
+    def show(s, **kw):
+        try: say(sha=push(s) if early else None, count=count(s), **kw)
+        except Exception as e:   # the phone sees them at the end; the search goes on
+            print("  results so far not pushed:", e); say(count=count(s), **kw)
     def partial(s):   # every market read, before the checks: the phone shows what was found while the checks go on
-        say(progress=78, sha=push(s), count=count(s), message=f"{count(s)} anuncios en todos los mercados. Comprobando que se pueden comprar…")
-        publish_page(); prefetch_photos(s)
+        show(s, progress=78, message=f"{count(s)} anuncios en todos los mercados. Comprobando que se pueden comprar…")
+        if early: publish_page()
+        prefetch_photos(s)
     M.partial = partial
     if M.HAS_KEYS:   # eBay first, at once, as the computer's server does (app_job.py ebay); motor.typed then goes on from there
         put(jid, status="ebay", progress=6, message="Buscando en eBay (16 países)…")
         M.run(["app_job.py", "ebay", jid], check=False)
-        say(progress=15, sha=push(sid), count=count(sid), message=f"eBay: {count(sid)} anuncios. Ahora Mercari, Rakuma, Magi, SNKRDUNK, Rakuten, Vinted…")
+        show(sid, progress=15, message=f"eBay: {count(sid)} anuncios. Ahora Mercari, Rakuma, Magi, SNKRDUNK, Rakuten, Vinted…")
     M.typed(jid)
     keep_cache()
     s = load(A.search_path(sid)) or {}
     nr = (s.get("no_results") or {}).get("not_read") or []
-    say(progress=100, status="done", sha=push(sid, final=True), count=count(sid),
-        message=f"Lista: {count(sid)} anuncios." + (f" No se pudieron leer: {', '.join(nr)}." if nr else ""))
-    if NUMBER:
+    finish(progress=100, status="done", sha=push(sid, final=True), count=count(sid),
+           message=f"Lista: {count(sid)} anuncios." + (f" No se pudieron leer: {', '.join(nr)}." if nr else ""))
+    publish_page()
+    if NUMBER:   # after the last message (the page goes by the message first; the label is for the computer and other devices)
         try: api(f"/issues/{NUMBER}/labels", "POST", {"labels": ["movil-hecha"]})
         except Exception as e: print("  label not added:", e)
-    publish_page()
     print(f"{count(sid)} anuncios -> api/results/{sid}.json")
 
 if __name__ == "__main__":
@@ -274,8 +312,8 @@ if __name__ == "__main__":
         main()
     except BaseException as e:
         traceback.print_exc()
-        say(status="error", message=f"No se pudo terminar la búsqueda ({type(e).__name__}). Inténtalo otra vez.")
         if NUMBER:
             try: api(f"/issues/{NUMBER}/labels", "POST", {"labels": ["movil-error"]})
             except Exception: pass
+        finish(status="error", message=f"No se pudo terminar la búsqueda ({type(e).__name__}). Inténtalo otra vez.")
         sys.exit(1)

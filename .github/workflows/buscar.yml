@@ -4,7 +4,9 @@
 # Hareruya2, Rakuten, GempireCards and Vinted in a hidden browser, the buyability and photo checks and Cardmarket (owner,
 # 31 October 2026: "search like the computer, in every market"). Progress goes to a comment of the issue (the phone reads it),
 # results to api/results/<search id>.json. The issue stays open: the computer's app completes it (grades on the labels).
-# Each search runs on its own (several can run at once); "Run workflow" with a card searches it without an issue.
+# Different cards are searched at once; the same card asked again stops the search still going ("Refrescar", a double tap).
+# The group carries the author, so nobody else's issue can stop the owner's search. "Run workflow" with a card searches it
+# without an issue (tests).
 name: Buscar desde el móvil
 on:
   issues:
@@ -19,15 +21,14 @@ permissions:
   issues: write
   actions: write
 concurrency:
-  group: buscar-${{ github.event.issue.number || github.run_id }}
-  cancel-in-progress: false
+  group: "buscar-${{ github.event.issue.user.login || github.actor }}-${{ github.event.issue.title || format('Buscar: {0}', inputs.query) }}"
+  cancel-in-progress: true
 jobs:
   buscar:
     if: github.event_name == 'workflow_dispatch' || (github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'Buscar:'))
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      GH_TOKEN: ${{ github.token }}
       NUMBER: ${{ github.event.issue.number }}
       TITLE: "${{ github.event.issue.title || format('Buscar: {0}', inputs.query) }}"
       PYTHONIOENCODING: utf-8
@@ -35,6 +36,7 @@ jobs:
       - name: Avisar al móvil
         if: env.NUMBER != ''
         env:
+          GH_TOKEN: ${{ github.token }}
           BODY: |-
             **3 %** · GitHub la recibe. Preparando el buscador…
 
@@ -44,9 +46,9 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Preparar el buscador
+      - name: Preparar el buscador   # fixed versions (the ones tested on 31 October 2026), not whatever is newest that day
         run: |
-          pip install -q playwright opencv-python-headless numpy pillow tzdata
+          pip install -q playwright==1.64.1 opencv-python-headless==5.0.0.93 numpy==2.5.4 pillow==13.0.0 tzdata==2026.6
           python -m playwright install --with-deps chromium
       # what earlier searches learnt about listings (eBay checks of the last day, cannot be bought), as the computer keeps it
       - uses: actions/cache@v4
@@ -56,6 +58,7 @@ jobs:
           restore-keys: pokefinder-
       - name: Buscar en todos los mercados
         env:
+          GH_TOKEN: ${{ github.token }}
           EBAY_APP_ID: ${{ secrets.EBAY_APP_ID }}
           EBAY_CERT_ID: ${{ secrets.EBAY_CERT_ID }}
           PF_CACHE: ${{ runner.temp }}/pokefinder-cache
@@ -65,4 +68,6 @@ jobs:
           python .github/buscar.py
       - name: Avisar del fallo
         if: failure() && env.NUMBER != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: gh issue edit "$NUMBER" --add-label movil-error -R "$GITHUB_REPOSITORY"
