@@ -6,7 +6,7 @@ App listing: {id, site, site_name, title, url, price_text, price_eur, sale ("buy
 ("New" | "Seen before"), first_seen, image, ships_to_spain, how_to_buy, note}
 Files: data/app/index.json (searches, newest first), data/app/searches/<id>.json (one search and its listings),
 data/app/jobs/<id>.json (a search waiting for, or being run by, Claude)."""
-import json, os, re, datetime as dt
+import hashlib, json, os, re, unicodedata, datetime as dt
 from common import P, load, save, to_eur, NOW, SCREENER
 
 CARDS = load(os.path.join(SCREENER, "cards.json"))["cards"]
@@ -160,7 +160,11 @@ def job_path(jid): return P("app", "jobs", f"{jid}.json")
 
 def slug(text):
     s = re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-")
-    return ("q-" + s)[:60] if s else "q-" + dt.datetime.now().strftime("%H%M%S")
+    if s: return ("q-" + s)[:60]
+    # no letters a-z (a search in Japanese only): a name made from the text itself, the same every time, so refreshing the search
+    # updates it instead of starting another (it was the time of day until 31 October 2026)
+    t = unicodedata.normalize("NFKC", text or "").strip().lower()
+    return "q-" + (hashlib.sha1(t.encode()).hexdigest()[:10] if t else dt.datetime.now().strftime("%H%M%S"))
 
 def save_search(s):
     """Saves the search and its card in data/app/index.json (the "Búsquedas recientes" folder). Cards keep their place: they are
