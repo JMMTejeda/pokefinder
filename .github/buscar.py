@@ -48,26 +48,34 @@ def api(path, method="GET", body=None):
         return json.loads(body) if body else None
 
 STATE = {"progress": 0, "status": "running", "message": "", "sha": None, "search": None, "count": None}
-SENT = {"comment": None, "at": 0, "stage": None}
+SENT = {"comment": None, "at": 0, "stage": None, "body": None, "later": None}
 
 def say(**kw):
     """The search's state on the issue (one comment, edited), which the phone's bar and results follow: at once when the stage or
-    the results change, else every 3 seconds at most."""
+    the results change, else every 3 seconds at most (what comes in between is sent at the end of those 3 seconds)."""
     with say_lock:
         p = kw.pop("progress", None)
         STATE.update({k: v for k, v in kw.items() if v is not None})
         if p is not None: STATE["progress"] = p if STATE["status"] == "done" else max(STATE["progress"], p)   # the bar never goes back
-        stage = (STATE["status"], STATE["sha"])
-        if not NUMBER or (stage == SENT["stage"] and time.time() - SENT["at"] < 3): return
-        body = f"**{STATE['progress']} %** · {STATE['message']}\n\n{MARK}{json.dumps(STATE, ensure_ascii=False)} -->"
-        try:
-            if not SENT["comment"]:   # buscar.yml's first step opened it
-                SENT["comment"] = next((c["id"] for c in api(f"/issues/{NUMBER}/comments?per_page=100") or [] if MARK in (c.get("body") or "")), None)
-            if SENT["comment"]: api(f"/issues/comments/{SENT['comment']}", "PATCH", {"body": body})
-            else: SENT["comment"] = api(f"/issues/{NUMBER}/comments", "POST", {"body": body})["id"]
-            SENT["at"], SENT["stage"] = time.time(), stage
-        except Exception as e:
-            print("  comment not updated:", type(e).__name__, e, flush=True)
+        if not NUMBER: return
+        if (STATE["status"], STATE["sha"]) == SENT["stage"] and time.time() - SENT["at"] < 3:
+            if not SENT["later"]:
+                SENT["later"] = threading.Timer(3 - (time.time() - SENT["at"]), lambda: (SENT.update(later=None), say()))
+                SENT["later"].daemon = True; SENT["later"].start()
+            return
+        send()
+
+def send():
+    body = f"**{STATE['progress']} %** · {STATE['message']}\n\n{MARK}{json.dumps(STATE, ensure_ascii=False)} -->"
+    if body == SENT["body"]: return
+    try:
+        if not SENT["comment"]:   # buscar.yml's first step opened it
+            SENT["comment"] = next((c["id"] for c in api(f"/issues/{NUMBER}/comments?per_page=100") or [] if MARK in (c.get("body") or "")), None)
+        if SENT["comment"]: api(f"/issues/comments/{SENT['comment']}", "PATCH", {"body": body})
+        else: SENT["comment"] = api(f"/issues/{NUMBER}/comments", "POST", {"body": body})["id"]
+        SENT.update(at=time.time(), stage=(STATE["status"], STATE["sha"]), body=body)
+    except Exception as e:
+        print("  comment not updated:", type(e).__name__, e, flush=True)
 
 def phone_job(jid):
     """motor.put's link to the phone: the job's progress and message, as the computer's app shows them."""
