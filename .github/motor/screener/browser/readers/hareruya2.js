@@ -1,0 +1,2 @@
+for(const a of document.querySelectorAll('a[href*="/products/"]')){const m=a.href.match(/\/products\/([\w-]+)/);if(!m)continue;const box=up(a,/¥[\d,]+/,6);const t=clean(box.innerText);const pm=t.match(/¥\s?([\d,]+)/);const st=t.match(/在庫\s*(\d+)/);
+if(!pm)continue;add('h2'+m[1],'https://www.hareruya2.com/products/'+m[1],t.replace(/¥\s?[\d,]+.*$/,''),'¥'+pm[1],(st&&+st[1]>0)?'on sale':'sold',st?'stock '+st[1]+', price including Japanese tax':'')}

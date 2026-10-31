@@ -1,43 +1,61 @@
-# A search asked from the phone page (a GitHub issue "Buscar: <text>" opened by the owner) is searched here, on eBay's 16 sites,
-# with the same engine the page carried on Cloudflare (engine.js + the rules exported by nube.engine_data). The eBay keys are this
-# repository's encrypted secrets EBAY_APP_ID / EBAY_CERT_ID. The results go to api/results/<search id>.json and the page is
-# published again. The issue stays open: the computer's app completes the search with the other markets when it is on.
+# A search asked from the phone page (a GitHub issue "Buscar: <text>" opened by the owner with the phone key) is searched here
+# with the computer's own engine (.github/buscar.py on .github/motor, both written by `nube.py publish`): eBay's 16 sites through
+# the API with this repository's encrypted secrets EBAY_APP_ID / EBAY_CERT_ID, then Mercari, Rakuma, Magi, Card Rush, SNKRDUNK,
+# Hareruya2, Rakuten, GempireCards and Vinted in a hidden browser, the buyability and photo checks and Cardmarket (owner,
+# 31 October 2026: "search like the computer, in every market"). Progress goes to a comment of the issue (the phone reads it),
+# results to api/results/<search id>.json. The issue stays open: the computer's app completes it (grades on the labels).
+# Each search runs on its own (several can run at once); "Run workflow" with a card searches it without an issue.
 name: Buscar desde el móvil
 on:
   issues:
     types: [opened]
+  workflow_dispatch:
+    inputs:
+      query:
+        description: Carta que buscar
+        required: true
 permissions:
   contents: write
   issues: write
   actions: write
 concurrency:
-  group: buscar
+  group: buscar-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false
 jobs:
   buscar:
-    if: github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'Buscar:')
+    if: github.event_name == 'workflow_dispatch' || (github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'Buscar:'))
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     env:
       GH_TOKEN: ${{ github.token }}
       NUMBER: ${{ github.event.issue.number }}
+      TITLE: ${{ github.event.issue.title || format('Buscar: {0}', inputs.query) }}
+      PYTHONIOENCODING: utf-8
     steps:
-      - uses: actions/checkout@v4
-      - name: Buscar en eBay
+      - name: Avisar al móvil
+        if: env.NUMBER != ''
         env:
-          TITLE: ${{ github.event.issue.title }}
+          BODY: |-
+            **3 %** · GitHub la recibe. Preparando el buscador…
+
+            <!-- pokefinder {"progress": 3, "status": "running", "message": "GitHub la recibe. Preparando el buscador…"} -->
+        run: gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER/comments" -f body="$BODY" --silent
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Preparar el buscador
+        run: |
+          pip install -q playwright opencv-python-headless numpy pillow tzdata
+          python -m playwright install --with-deps chromium
+      - name: Buscar en todos los mercados
+        env:
           EBAY_APP_ID: ${{ secrets.EBAY_APP_ID }}
           EBAY_CERT_ID: ${{ secrets.EBAY_CERT_ID }}
-        run: node .github/buscar.js
-      - name: Guardar y publicar
         run: |
           git config user.name "PokéFinder"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add api
-          git diff --cached --quiet || git commit -q -m "Búsqueda desde el móvil #$NUMBER"
-          for i in 1 2 3 4 5; do git pull -q --rebase -X theirs origin main && git push -q origin HEAD:main && break; sleep 5; done
-          gh issue edit "$NUMBER" --add-label movil-hecha
-          gh workflow run pages.yml --ref main
+          python .github/buscar.py
       - name: Avisar del fallo
-        if: failure()
-        run: gh issue edit "$NUMBER" --add-label movil-error
+        if: failure() && env.NUMBER != ''
+        run: gh issue edit "$NUMBER" --add-label movil-error -R "$GITHUB_REPOSITORY"

@@ -1,0 +1,58 @@
+{
+ "ebay": {
+  "direct": "Depends on the listing",
+  "how": "eBay shows delivery to Spain on each listing (read on the listing page)"
+ },
+ "mercari": {
+  "direct": "No (proxy)",
+  "how": "Mercari Japan does not ship to Spain. Buy through Buyee, Mercari's official partner (buyee.jp/mercari): ¥500 purchase fee per order plus optional plan, domestic and international postage at cost. Other proxies (ZenMarket, FROM JAPAN) unverified. Source: Buyee help pages, 15 October 2026"
+ },
+ "snkrdunk": {
+  "direct": "No (proxy)",
+  "how": "SNKRDUNK's international shipping does not include Spain (supported: Japan, Korea, Taiwan, Hong Kong, Singapore, Australia, New Zealand, United States, Canada; help page July 2025). SNKRDUNK names Buyee for other countries; FROM JAPAN also links SNKRDUNK (May 2026). Import Value Added Tax and duty paid on arrival"
+ },
+ "rakuma": {
+  "direct": "No (proxy)",
+  "how": "Rakuma sellers ship within Japan only. Buy through ZenMarket (Rakuma integrated, about ¥300 to ¥500 per item), Neokyo (¥350 per item) or Japan Rabbit"
+ },
+ "cardrush": {
+  "direct": "No (proxy), unverified",
+  "how": "Card Rush appears not to ship abroad (Card Rush's own page could not be read). Use a link-paste proxy such as Remambo or ZenMarket (¥300 to ¥800 per item); proxy acceptance not confirmed"
+ },
+ "magi": {
+  "direct": "No (proxy)",
+  "how": "Magi sends overseas buyers to proxies: WorldShopping (main) or Buyee (shop.buyee.jp/magi). Source: en.magi.camp/guides/1, 15 October 2026"
+ },
+ "wallapop": {
+  "direct": "Yes, direct",
+  "how": "Wallapop Envíos within Spain (not Ceuta or Melilla): Correos, InPost or SEUR, 3 to 8 working days; buyer pays postage plus Protección Wallapop; items up to €2,500"
+ },
+ "vinted": {
+  "direct": "Yes, direct",
+  "how": "Vinted ships to Spain from Spain and other connected European countries; Vinted buyer protection usually 5% + €0.70 plus postage (vinted.es price list, 5 October 2026)"
+ },
+ "buyee": {
+  "direct": "No (proxy: Buyee)",
+  "how": "Yahoo! Auctions Japan is closed to European Union visitors; Buyee bids or buys for you and ships to Spain. Fees: Buyee service fee (about ¥300 per item at the time of checking; check buyee.jp before bidding), domestic postage in Japan, international postage, and Spanish import Value Added Tax and duty on arrival. Auctions can end above the current price."
+ },
+ "gempire": {
+  "direct": "Not verified",
+  "how": "United States auction house (ALT, Fanatics Collect or Goldin) found through GempireCards. Each sets its own international shipping and adds a buyer's premium on top of the hammer price; check the lot page before bidding. Spanish import Value Added Tax and duty are paid on arrival"
+ },
+ "hareruya2": {
+  "direct": "Not verified",
+  "how": "Hareruya2 is a Japanese card shop (Hareruya group). Its overseas shipping to Spain was not checked; if it does not ship abroad, use a link-paste proxy such as ZenMarket or Remambo. Prices include Japanese consumption tax. Spanish import Value Added Tax and duty paid on arrival"
+ },
+ "paypay": {
+  "direct": "No (proxy: Buyee)",
+  "how": "PayPay Flea Market (Yahoo! JAPAN) is closed to European Union visitors; Buyee buys it for you and ships to Spain (added 26 October 2026). Fees: Buyee service fee, domestic postage in Japan, international postage, and Spanish import Value Added Tax and duty on arrival."
+ },
+ "yshop": {
+  "direct": "No (proxy: Buyee)",
+  "how": "Yahoo! Shopping Japan (a Japanese shop selling on Yahoo!) is closed to European Union visitors; Buyee orders it for you and ships to Spain (added 26 October 2026). Fees: Buyee service fee, the shop's postage in Japan, international postage, and Spanish import Value Added Tax and duty on arrival."
+ },
+ "rakuten": {
+  "direct": "Usually no (proxy: Buyee or another forwarder)",
+  "how": "Rakuten Ichiba shops normally deliver only inside Japan; buy through a proxy such as Buyee (it supports Rakuten) or a parcel forwarder (added 26 October 2026). Fees: proxy fee, the shop's postage in Japan, international postage, and Spanish import Value Added Tax and duty on arrival."
+ }
+}

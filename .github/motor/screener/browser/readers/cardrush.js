@@ -1,0 +1,2 @@
+for(const a of document.querySelectorAll('a[href*="/product/"]')){const m=a.href.match(/\/product\/(\d+)/);if(!m)continue;const t=clean(up(a,/円/).innerText);const pm=t.match(/([\d,]+)円/);const st=t.match(/在庫数\s*(\d+)/);
+if(!(st&&+st[1]>0))continue;add('cr'+m[1],a.href.split('?')[0],t.replace(/[\d,]+円.*$/,''),pm?'¥'+pm[1]:'',(st&&+st[1]>0)?'on sale':'out of stock',st?'stock '+st[1]+', price including Japanese tax':'')}

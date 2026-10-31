@@ -1,0 +1,690 @@
+{
+ "_note": "Japanese Gold Star (☆) cards tracked (owner, 15 October 2026). Priority (owner, 15 October 2026): the five Play promos Vaporeon 022, Jolteon 023, Flareon 024, Espeon 025 and Umbreon 026 /PLAY. Vaporeon, Jolteon and Flareon count ONLY as the PLAY promos; their World Champions Pack cards (011/015/027 of 108) are not tracked and are ruled out on the photo. Sources: Bulbapedia 'Pokémon ☆ (TCG)' and set pages, Bill's Archive, Card Rush listings (checked 15 October 2026). Not tracked: World Champions Pack versions, the 2021 Umbreon 25th Anniversary reprint 012/025, English cards.",
+ "cards": [
+  {
+   "key": "vaporeon_play",
+   "pokemon": "Vaporeon",
+   "name_en": "Vaporeon ☆",
+   "name_ja": "シャワーズ☆",
+   "names": [
+    "シャワーズ",
+    "Vaporeon",
+    "Aquali",
+    "Aquana"
+   ],
+   "number": "022/PLAY",
+   "numbers": [
+    "022/PLAY",
+    "022 / PLAY",
+    "022/play",
+    "#022 play",
+    "22/play"
+   ],
+   "set_en": "PLAY promo (Players Club, 2005, 10,000 EXP)",
+   "set_ja": "プレイヤーズプロモ",
+   "year": 2005,
+   "editions": "none",
+   "priority": true,
+   "needs_photo_check": true,
+   "other_versions": [
+    {
+     "name": "World Champions Pack 015/108",
+     "keys": [
+      "015/108",
+      "/108",
+      "wcp",
+      "world champ",
+      "worlds",
+      "ワールドチャンピオンズ",
+      "ワールドチャンピオン",
+      "champions pack",
+      "1ed",
+      "1st",
+      "power keepers",
+      "world champions pack",
+      "ワールドチャンピオンズパック"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "jolteon_play",
+   "pokemon": "Jolteon",
+   "name_en": "Jolteon ☆",
+   "name_ja": "サンダース☆",
+   "names": [
+    "サンダース",
+    "Jolteon",
+    "Voltali",
+    "Blitza"
+   ],
+   "number": "023/PLAY",
+   "numbers": [
+    "023/PLAY",
+    "023 / PLAY",
+    "023/play",
+    "#023 play",
+    "23/play"
+   ],
+   "set_en": "PLAY promo (Players Club, 2005, 20,000 EXP)",
+   "set_ja": "プレイヤーズプロモ",
+   "year": 2005,
+   "editions": "none",
+   "priority": true,
+   "needs_photo_check": true,
+   "other_versions": [
+    {
+     "name": "World Champions Pack 027/108",
+     "keys": [
+      "027/108",
+      "/108",
+      "wcp",
+      "world champ",
+      "worlds",
+      "ワールドチャンピオンズ",
+      "ワールドチャンピオン",
+      "champions pack",
+      "1ed",
+      "1st",
+      "power keepers",
+      "world champions pack",
+      "ワールドチャンピオンズパック"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "flareon_play",
+   "pokemon": "Flareon",
+   "name_en": "Flareon ☆",
+   "name_ja": "ブースター☆",
+   "names": [
+    "ブースター",
+    "Flareon",
+    "Pyroli",
+    "Flamara"
+   ],
+   "number": "024/PLAY",
+   "numbers": [
+    "024/PLAY",
+    "024 / PLAY",
+    "024/play",
+    "#024 play",
+    "24/play"
+   ],
+   "set_en": "PLAY promo (Players Club, 2005, 30,000 EXP)",
+   "set_ja": "プレイヤーズプロモ",
+   "year": 2005,
+   "editions": "none",
+   "priority": true,
+   "needs_photo_check": true,
+   "other_versions": [
+    {
+     "name": "World Champions Pack 011/108",
+     "keys": [
+      "011/108",
+      "/108",
+      "wcp",
+      "world champ",
+      "worlds",
+      "ワールドチャンピオンズ",
+      "ワールドチャンピオン",
+      "champions pack",
+      "1ed",
+      "1st",
+      "power keepers",
+      "world champions pack",
+      "ワールドチャンピオンズパック"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "espeon_play",
+   "pokemon": "Espeon",
+   "name_en": "Espeon ☆",
+   "name_ja": "エーフィ☆",
+   "names": [
+    "エーフィ",
+    "Espeon",
+    "Mentali",
+    "Psiana"
+   ],
+   "number": "025/PLAY",
+   "numbers": [
+    "025/PLAY",
+    "025 / PLAY",
+    "025/play",
+    "#025 play",
+    "25/play"
+   ],
+   "set_en": "PLAY promo (Players Club, 2005-2006, 40,000 EXP)",
+   "set_ja": "プレイヤーズプロモ",
+   "year": 2005,
+   "editions": "none",
+   "priority": true,
+   "needs_photo_check": true,
+   "other_versions": []
+  },
+  {
+   "key": "umbreon_play",
+   "pokemon": "Umbreon",
+   "name_en": "Umbreon ☆",
+   "name_ja": "ブラッキー☆",
+   "names": [
+    "ブラッキー",
+    "Umbreon",
+    "Noctali",
+    "Nachtara"
+   ],
+   "number": "026/PLAY",
+   "numbers": [
+    "026/PLAY",
+    "026 / PLAY",
+    "026/play",
+    "#026 play",
+    "26/play"
+   ],
+   "set_en": "PLAY promo (Players Club, 2005-2006, 70,000 EXP)",
+   "set_ja": "プレイヤーズプロモ",
+   "year": 2005,
+   "editions": "none",
+   "priority": true,
+   "needs_photo_check": true,
+   "other_versions": [
+    {
+     "name": "25th Anniversary reprint 012/025",
+     "keys": [
+      "012/025",
+      "25th",
+      "25周年",
+      "プロモカードパック",
+      "celebrations",
+      "classic collection",
+      "aniversario",
+      "anniversary",
+      "s8a",
+      "2021",
+      "25 th",
+      "25th anniv",
+      "プロモカードパック 25th"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "latias",
+   "pokemon": "Latias",
+   "name_en": "Latias ☆",
+   "name_ja": "ラティアス☆",
+   "names": [
+    "ラティアス",
+    "Latias"
+   ],
+   "number": "065/082",
+   "numbers": [
+    "065/082"
+   ],
+   "set_en": "Clash of the Blue Sky",
+   "set_ja": "蒼空の激突",
+   "year": 2004,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "latios",
+   "pokemon": "Latios",
+   "name_en": "Latios ☆",
+   "name_ja": "ラティオス☆",
+   "names": [
+    "ラティオス",
+    "Latios"
+   ],
+   "number": "066/082",
+   "numbers": [
+    "066/082"
+   ],
+   "set_en": "Clash of the Blue Sky",
+   "set_ja": "蒼空の激突",
+   "year": 2004,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "rayquaza",
+   "pokemon": "Rayquaza",
+   "name_en": "Rayquaza ☆",
+   "name_ja": "レックウザ☆",
+   "names": [
+    "レックウザ",
+    "Rayquaza"
+   ],
+   "number": "067/082",
+   "numbers": [
+    "067/082"
+   ],
+   "set_en": "Clash of the Blue Sky",
+   "set_ja": "蒼空の激突",
+   "year": 2004,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "treecko",
+   "pokemon": "Treecko",
+   "name_en": "Treecko ☆",
+   "name_ja": "キモリ☆",
+   "names": [
+    "キモリ",
+    "Treecko",
+    "Arcko",
+    "Geckarbor"
+   ],
+   "number": "011/084",
+   "numbers": [
+    "011/084"
+   ],
+   "set_en": "Rocket Gang Strikes Back",
+   "set_ja": "ロケット団の逆襲",
+   "year": 2004,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "torchic",
+   "pokemon": "Torchic",
+   "name_en": "Torchic ☆",
+   "name_ja": "アチャモ☆",
+   "names": [
+    "アチャモ",
+    "Torchic",
+    "Poussifeu",
+    "Flemmli"
+   ],
+   "number": "020/084",
+   "numbers": [
+    "020/084"
+   ],
+   "set_en": "Rocket Gang Strikes Back",
+   "set_ja": "ロケット団の逆襲",
+   "year": 2004,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "mudkip",
+   "pokemon": "Mudkip",
+   "name_en": "Mudkip ☆",
+   "name_ja": "ミズゴロウ☆",
+   "names": [
+    "ミズゴロウ",
+    "Mudkip",
+    "Gobou",
+    "Hydropi"
+   ],
+   "number": "033/084",
+   "numbers": [
+    "033/084"
+   ],
+   "set_en": "Rocket Gang Strikes Back",
+   "set_ja": "ロケット団の逆襲",
+   "year": 2004,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "entei",
+   "pokemon": "Entei",
+   "name_en": "Entei ☆",
+   "name_ja": "エンテイ☆",
+   "names": [
+    "エンテイ",
+    "Entei"
+   ],
+   "number": "019/106",
+   "numbers": [
+    "019/106"
+   ],
+   "set_en": "Golden Sky, Silvery Ocean",
+   "set_ja": "金の空、銀の海",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "suicune",
+   "pokemon": "Suicune",
+   "name_en": "Suicune ☆",
+   "name_ja": "スイクン☆",
+   "names": [
+    "スイクン",
+    "Suicune"
+   ],
+   "number": "032/106",
+   "numbers": [
+    "032/106"
+   ],
+   "set_en": "Golden Sky, Silvery Ocean",
+   "set_ja": "金の空、銀の海",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "raikou",
+   "pokemon": "Raikou",
+   "name_en": "Raikou ☆",
+   "name_ja": "ライコウ☆",
+   "names": [
+    "ライコウ",
+    "Raikou"
+   ],
+   "number": "039/106",
+   "numbers": [
+    "039/106"
+   ],
+   "set_en": "Golden Sky, Silvery Ocean",
+   "set_ja": "金の空、銀の海",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "regice",
+   "pokemon": "Regice",
+   "name_en": "Regice ☆",
+   "name_ja": "レジアイス☆",
+   "names": [
+    "レジアイス",
+    "Regice"
+   ],
+   "number": "033/086",
+   "numbers": [
+    "033/086"
+   ],
+   "set_en": "Mirage Forest",
+   "set_ja": "まぼろしの森",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "regirock",
+   "pokemon": "Regirock",
+   "name_en": "Regirock ☆",
+   "name_ja": "レジロック☆",
+   "names": [
+    "レジロック",
+    "Regirock"
+   ],
+   "number": "059/086",
+   "numbers": [
+    "059/086"
+   ],
+   "set_en": "Mirage Forest",
+   "set_ja": "まぼろしの森",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "registeel",
+   "pokemon": "Registeel",
+   "name_en": "Registeel ☆",
+   "name_ja": "レジスチル☆",
+   "names": [
+    "レジスチル",
+    "Registeel"
+   ],
+   "number": "076/086",
+   "numbers": [
+    "076/086"
+   ],
+   "set_en": "Mirage Forest",
+   "set_ja": "まぼろしの森",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "kyogre",
+   "pokemon": "Kyogre",
+   "name_en": "Kyogre ☆",
+   "name_ja": "カイオーガ☆",
+   "names": [
+    "カイオーガ",
+    "Kyogre"
+   ],
+   "number": "028/086",
+   "numbers": [
+    "028/086"
+   ],
+   "set_en": "Holon Research Tower",
+   "set_ja": "ホロンの研究塔",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "groudon",
+   "pokemon": "Groudon",
+   "name_en": "Groudon ☆",
+   "name_ja": "グラードン☆",
+   "names": [
+    "グラードン",
+    "Groudon"
+   ],
+   "number": "056/086",
+   "numbers": [
+    "056/086"
+   ],
+   "set_en": "Holon Research Tower",
+   "set_ja": "ホロンの研究塔",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "metagross",
+   "pokemon": "Metagross",
+   "name_en": "Metagross ☆",
+   "name_ja": "メタグロス☆",
+   "names": [
+    "メタグロス",
+    "Metagross",
+    "Métalosse"
+   ],
+   "number": "075/086",
+   "numbers": [
+    "075/086"
+   ],
+   "set_en": "Holon Research Tower",
+   "set_ja": "ホロンの研究塔",
+   "year": 2005,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "pikachu",
+   "pokemon": "Pikachu",
+   "name_en": "Pikachu ☆",
+   "name_ja": "ピカチュウ☆",
+   "names": [
+    "ピカチュウ",
+    "Pikachu"
+   ],
+   "number": "001/002",
+   "numbers": [
+    "001/002"
+   ],
+   "set_en": "Gift Box Mew • Lucario",
+   "set_ja": "ギフトボックス ミュウ・ルカリオ",
+   "year": 2005,
+   "editions": "one printing",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "mewtwo",
+   "pokemon": "Mewtwo",
+   "name_en": "Mewtwo ☆",
+   "name_ja": "ミュウツー☆",
+   "names": [
+    "ミュウツー",
+    "Mewtwo"
+   ],
+   "number": "002/002",
+   "numbers": [
+    "002/002"
+   ],
+   "set_en": "Gift Box Mew • Lucario",
+   "set_ja": "ギフトボックス ミュウ・ルカリオ",
+   "year": 2005,
+   "editions": "one printing",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "gyarados",
+   "pokemon": "Gyarados",
+   "name_en": "Gyarados ☆ δ",
+   "name_ja": "ギャラドス☆",
+   "names": [
+    "ギャラドス",
+    "Gyarados",
+    "Léviator",
+    "Garados"
+   ],
+   "number": "008/052",
+   "numbers": [
+    "008/052"
+   ],
+   "set_en": "Holon Phantom",
+   "set_ja": "ホロンの幻影",
+   "year": 2006,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "celebi",
+   "pokemon": "Celebi",
+   "name_en": "Celebi ☆",
+   "name_ja": "セレビィ☆",
+   "names": [
+    "セレビィ",
+    "Celebi"
+   ],
+   "number": "004/075",
+   "numbers": [
+    "004/075"
+   ],
+   "set_en": "Miracle Crystal",
+   "set_ja": "きせきの結晶",
+   "year": 2006,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "alakazam",
+   "pokemon": "Alakazam",
+   "name_en": "Alakazam ☆",
+   "name_ja": "フーディン☆",
+   "names": [
+    "フーディン",
+    "Alakazam",
+    "Simsala"
+   ],
+   "number": "033/075",
+   "numbers": [
+    "033/075"
+   ],
+   "set_en": "Miracle Crystal",
+   "set_ja": "きせきの結晶",
+   "year": 2006,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "mew",
+   "pokemon": "Mew",
+   "name_en": "Mew ☆ δ",
+   "name_ja": "ミュウ☆",
+   "names": [
+    "ミュウ",
+    "Mew"
+   ],
+   "number": "015/068",
+   "numbers": [
+    "015/068"
+   ],
+   "set_en": "Offense and Defense of the Furthest Ends",
+   "set_ja": "さいはての攻防",
+   "year": 2006,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  },
+  {
+   "key": "charizard",
+   "pokemon": "Charizard",
+   "name_en": "Charizard ☆ δ",
+   "name_ja": "リザードン☆",
+   "names": [
+    "リザードン",
+    "Charizard",
+    "Dracaufeu",
+    "Glurak"
+   ],
+   "number": "052/068",
+   "numbers": [
+    "052/068"
+   ],
+   "set_en": "Offense and Defense of the Furthest Ends",
+   "set_ja": "さいはての攻防",
+   "year": 2006,
+   "editions": "1st Edition and Unlimited",
+   "priority": false,
+   "needs_photo_check": false,
+   "other_versions": []
+  }
+ ]
+}

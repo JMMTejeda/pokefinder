@@ -1,0 +1,233 @@
+"""A search typed on the phone page, done by GitHub Actions (buscar.yml) with the computer's own engine (owner, 31 October 2026:
+"from the phone, search the card the way the computer does, in every market, instead of sending me to GitHub").
+
+The engine is the app's (screener/scripts and the page readers, copied to .github/motor by `nube.py publish`): eBay's 16 sites
+through the API, then the same hidden browser (Playwright's Chromium) reading Mercari, Rakuma, Magi, Card Rush, SNKRDUNK, Hareruya2,
+Rakuten, GempireCards and Vinted with the same readers and title rules, the check that each listing can be bought, the photo
+checks and Cardmarket: motor.typed, step by step. Tested from GitHub on 31 October 2026: every one of those sites answers except
+Card Rush (Cloudflare check, as on the computer); Buyee and Wallapop turn automated browsers away and are not opened.
+Two differences with the computer: the sites are read side by side (one browser per site, each at a person's pace on its own
+site), and the grade on a slab's label is not read (that is Windows text recognition): the title says it until the computer's
+app completes the search (the issue stays open for it, labelled movil-hecha).
+
+The phone follows the search on its issue: one comment, edited as it goes (progress, message, and the commit holding the newest
+results); the page reads it with the phone key. Results are api/results/<search id>.json, pushed after eBay, after the markets
+and at the end, so the phone shows them while the checks go on (it reads them at raw.githubusercontent.com/<repo>/<commit>/...).
+  python .github/buscar.py     (env: TITLE "Buscar: <text>", NUMBER, GITHUB_REPOSITORY, GH_TOKEN, EBAY_APP_ID, EBAY_CERT_ID,
+                                BRANCH, main by default)"""
+import json, os, re, subprocess, sys, threading, time, traceback, urllib.request
+from concurrent.futures import ThreadPoolExecutor
+
+HERE = os.path.dirname(os.path.abspath(__file__))   # .github
+REPO_DIR = os.path.dirname(HERE)
+MOTOR = os.path.join(HERE, "motor")
+REPO, NUMBER, BRANCH = os.environ.get("GITHUB_REPOSITORY", ""), os.environ.get("NUMBER") or "", os.environ.get("BRANCH") or "main"
+QUERY = re.sub(r"\s+", " ", re.sub(r"^\s*Buscar:\s*", "", os.environ.get("TITLE", ""), flags=re.I)).strip()[:120]
+MARK = "<!-- pokefinder "   # the page finds the state in the comment by this (template.html phoneState)
+
+# the eBay keys (this repository's encrypted secrets) where the engine looks for them, before it is imported: never committed
+# (only api/results is), never printed
+if os.environ.get("EBAY_APP_ID") and os.environ.get("EBAY_CERT_ID"):
+    os.makedirs(os.path.join(MOTOR, ".secrets"), exist_ok=True)
+    with open(os.path.join(MOTOR, ".secrets", "ebay_api.json"), "w", encoding="utf-8") as f:
+        json.dump({"app_id": os.environ["EBAY_APP_ID"].strip(), "cert_id": os.environ["EBAY_CERT_ID"].strip()}, f)
+sys.path.insert(0, os.path.join(MOTOR, "screener", "scripts")); os.chdir(os.path.join(MOTOR, "screener", "scripts"))
+import motor as M, app_lib as A, nube   # noqa: E402
+from common import load, save           # noqa: E402
+
+jobs_lock, say_lock = threading.Lock(), threading.Lock()
+
+# ---------------------------------------------------------------- the issue comment the phone reads
+def api(path, method="GET", body=None):
+    req = urllib.request.Request("https://api.github.com/repos/" + REPO + path, method=method,
+                                 data=json.dumps(body).encode() if body is not None else None,
+                                 headers={"Authorization": "Bearer " + os.environ.get("GH_TOKEN", ""), "Accept": "application/vnd.github+json",
+                                          "Content-Type": "application/json", "User-Agent": "PokeFinder"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        body = r.read()
+        return json.loads(body) if body else None
+
+STATE = {"progress": 0, "status": "running", "message": "", "sha": None, "search": None, "count": None}
+SENT = {"comment": None, "at": 0, "stage": None}
+
+def say(**kw):
+    """The search's state on the issue (one comment, edited), which the phone's bar and results follow: at once when the stage or
+    the results change, else every 3 seconds at most."""
+    with say_lock:
+        p = kw.pop("progress", None)
+        STATE.update({k: v for k, v in kw.items() if v is not None})
+        if p is not None: STATE["progress"] = p if STATE["status"] == "done" else max(STATE["progress"], p)   # the bar never goes back
+        stage = (STATE["status"], STATE["sha"])
+        if not NUMBER or (stage == SENT["stage"] and time.time() - SENT["at"] < 3): return
+        body = f"**{STATE['progress']} %** · {STATE['message']}\n\n{MARK}{json.dumps(STATE, ensure_ascii=False)} -->"
+        try:
+            if not SENT["comment"]:   # buscar.yml's first step opened it
+                SENT["comment"] = next((c["id"] for c in api(f"/issues/{NUMBER}/comments?per_page=100") or [] if MARK in (c.get("body") or "")), None)
+            if SENT["comment"]: api(f"/issues/comments/{SENT['comment']}", "PATCH", {"body": body})
+            else: SENT["comment"] = api(f"/issues/{NUMBER}/comments", "POST", {"body": body})["id"]
+            SENT["at"], SENT["stage"] = time.time(), stage
+        except Exception as e:
+            print("  comment not updated:", type(e).__name__, e, flush=True)
+
+def phone_job(jid):
+    """motor.put's link to the phone: the job's progress and message, as the computer's app shows them."""
+    j = M.job(jid) or {}
+    msg = j.get("message") or ""
+    if msg.startswith("Leyendo las notas"): msg = "Comprobando las fotos y los precios de Cardmarket…"   # no label reading here
+    say(progress=j.get("progress"), message=msg)
+
+# ---------------------------------------------------------------- results in the repository
+def git(*a, check=True):
+    r = subprocess.run(("git",) + a, cwd=REPO_DIR, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if check and r.returncode: raise RuntimeError(f"git {a[0]}: {(r.stderr or r.stdout).strip()[-300:]}")
+    return r
+
+def push(sid, final=False):
+    """The search's results so far -> api/results/<sid>.json, committed and pushed (only that file). Returns the commit."""
+    doc = nube.results_doc(sid)
+    if not doc: return None
+    doc.update(by="phone", request=f"i{NUMBER}" if NUMBER else None)
+    doc["search"].update(phone=True, final=final)
+    rel = f"api/results/{sid}.json"
+    os.makedirs(os.path.join(REPO_DIR, "api", "results"), exist_ok=True)
+    with open(os.path.join(REPO_DIR, rel), "w", encoding="utf-8") as h: json.dump(doc, h, ensure_ascii=False, separators=(",", ":"))
+    git("add", rel)
+    if git("diff", "--cached", "--quiet", check=False).returncode:
+        git("commit", "-q", "-m", f"Búsqueda desde el móvil #{NUMBER}: {QUERY}" + ("" if final else " (sigue)"))
+    for n in range(6):   # the computer and other phone searches push too (other files): take theirs and try again
+        git("pull", "-q", "--rebase", "-X", "theirs", "origin", BRANCH, check=False)
+        if git("push", "-q", "origin", "HEAD:" + BRANCH, check=False).returncode == 0:
+            return git("rev-parse", "HEAD").stdout.strip()
+        time.sleep(3 * (n + 1))
+    raise RuntimeError("git push: GitHub no aceptó los resultados")
+
+def publish_page():
+    """api/state.json (what other devices see) is made by pages.yml; a push made here with GitHub's own token does not start it."""
+    if BRANCH == "main": subprocess.run(["gh", "workflow", "run", "pages.yml", "--ref", "main", "-R", REPO], capture_output=True)
+
+# ---------------------------------------------------------------- the engine's browser steps, sites side by side
+def put(jid, **kw):
+    with jobs_lock: return M.put(jid, **kw)
+
+SIDE = 3   # browsers at once: with eight, GitHub's machine (4 processors) drew Mercari and Rakuten too slowly and they read 0 (31 October 2026)
+
+def side_by_side(items, host, read, jid, lo, hi, label):
+    """Each site's items in its own hidden browser, three sites at a time; a person's pace within each site (motor.Browser.pace)."""
+    groups, done = {}, [0]
+    for x in items: groups.setdefault(host(x), []).append(x)
+    def worker(xs):
+        br = M.Browser()
+        try:
+            for x in xs:
+                name = read(br, x)
+                with jobs_lock:
+                    done[0] += 1; n = done[0]
+                put(jid, progress=lo + int((hi - lo) * n / len(items)), message=label(name, n, len(items)))
+        finally:
+            br.close()
+    # the biggest sites first, so the last one to finish is not a long one started late
+    with ThreadPoolExecutor(min(SIDE, len(groups))) as ex: list(ex.map(worker, sorted(groups.values(), key=len, reverse=True)))
+
+def again(items, read):
+    """Pages that came back empty in the side-by-side pass, read once more alone (as the computer reads them)."""
+    if not items: return
+    br = M.Browser()
+    try:
+        for x in items: read(br, x)
+    finally:
+        br.close()
+
+def read_pages(jid, bdir, lo=15, hi=80, label="Leyendo"):
+    """motor.read_pages, side by side; a page that read nothing (not blocked) is read again alone."""
+    todo = [p for p in load(os.path.join(M.P(), bdir, "pages.json"), []) if not p.get("api") and p["site"] not in M.SKIP
+            and not os.path.exists(os.path.join(M.P(), bdir, "pages", f"{p['i']:03d}.json"))]
+    if not todo: return
+    os.makedirs(os.path.join(M.P(), bdir, "pages"), exist_ok=True)
+    out = lambda p: os.path.join(M.P(), bdir, "pages", f"{p['i']:03d}.json")
+    def read(br, p):
+        d = br.read(p["url"], p["js"], p.get("viewport", "tall"))
+        old = load(out(p))
+        if not (old and old.get("n") and not d.get("n")): save(out(p), d)   # a second reading never replaces a fuller one
+        M.log(f"  page {p['i']} {p['site']}:", "BLOCKED " + str(d.get("title")) if d.get("blocked") else f"{d.get('n')} read, {len(d.get('rows', []))} kept")
+        return A.SITE_NAME.get(p["site"], p["site"])
+    side_by_side(todo, lambda p: p["site"], read, jid, lo, hi, lambda name, n, t: f"{label}: {name} ({n} de {t} páginas)")
+    empty = [p for p in todo if not (load(out(p)) or {}).get("blocked") and not (load(out(p)) or {}).get("n")]
+    if empty: put(jid, message=f"{label}: otra vez {', '.join(sorted({A.SITE_NAME.get(p['site'], p['site']) for p in empty}))}")
+    again(empty, read)
+
+def read_queue(jid, queue, outdir, js, lo, hi, label, skip_site=None):
+    """motor.read_queue (still for sale? can it be bought?), side by side, with the same listings left out; a listing found
+    without a buy button is opened once more alone before it is ruled out (a page drawn slowly shows its button late)."""
+    os.makedirs(outdir, exist_ok=True)
+    todo = [q for q in queue if not os.path.exists(os.path.join(outdir, M.safe(q["key"]) + ".json"))
+            and not M.SKIP_HOSTS.search(M.direct(q["url"])) and not (skip_site and skip_site(q))
+            and not (M.HAS_KEYS and re.search(r"//(?:www\.)?ebay\.", M.direct(q["url"])))]
+    if not todo: return
+    out = lambda q: os.path.join(outdir, M.safe(q["key"]) + ".json")
+    def read(br, q):
+        d = br.read(M.direct(q["url"]), js)
+        if d.get("blocked"): M.log("  blocked:", q["url"], d.get("title"))   # not saved: no verdict
+        else: save(out(q), d)
+    side_by_side(todo, lambda q: re.sub(r"^https?://(?:www\.)?([^/]+).*", r"\1", M.direct(q["url"])), read, jid, lo, hi,
+                 lambda name, n, t: f"{label} ({n} de {t})")
+    again([q for q in todo if (load(out(q)) or {}).get("reason") == "sin botón de compra"], read)
+
+def prefetch_photos(sid):
+    """Every listing photo downloaded at once, at its largest size (the photo checks then read them from the cache)."""
+    import leer_etiqueta as E
+    urls = [l["image"] for l in (load(A.search_path(sid)) or {}).get("listings", []) if l.get("image")]
+    def get(u):
+        try: E.image(u)
+        except Exception: pass
+    with ThreadPoolExecutor(12) as ex: list(ex.map(get, urls))
+
+# ---------------------------------------------------------------- the search
+def new_job(query):
+    """server.new_job for a typed search, without the local server."""
+    sid = A.slug(query)
+    jid = f"{sid}-{A.now_iso()[:16].replace(':', '').replace('-', '').replace('T', '-')}"
+    save(A.job_path(jid), {"id": jid, "search_id": sid, "kind": "text", "group": None, "query": query, "label": query, "status": "queued",
+                           "progress": 3, "created": A.now_iso(), "message": "En cola", "browser_dir": f"app/jobs/{jid}/browser"})
+    A.save_search({"id": sid, "kind": "text", "group": None, "query": query, "label": query, "listings": [], "pokemon": [],
+                   "no_results": {}, "status": "searching", "job": jid})
+    return jid, sid
+
+def count(sid): return len((load(A.search_path(sid)) or {}).get("listings", []))
+
+def main():
+    if len(QUERY) < 2: raise SystemExit("búsqueda vacía")
+    jid, sid = new_job(QUERY)
+    say(progress=5, search=sid, message="GitHub la recibe. Buscando en eBay (16 países)…")
+    M.cloud_on = lambda: False   # the computer's link to the page; here the comment and the pushes do that
+    M.phone_job, M.phone_results = phone_job, lambda sids: None
+    M.read_pages, M.read_queue = read_pages, read_queue
+    def partial(s):   # every market read, before the checks: the phone shows what was found while the checks go on
+        say(progress=78, sha=push(s), count=count(s), message=f"{count(s)} anuncios en todos los mercados. Comprobando que se pueden comprar…")
+        publish_page(); prefetch_photos(s)
+    M.partial = partial
+    if M.HAS_KEYS:   # eBay first, at once, as the computer's server does (app_job.py ebay); motor.typed then goes on from there
+        put(jid, status="ebay", progress=6, message="Buscando en eBay (16 países)…")
+        M.run(["app_job.py", "ebay", jid], check=False)
+        say(progress=15, sha=push(sid), count=count(sid), message=f"eBay: {count(sid)} anuncios. Ahora Mercari, Rakuma, Magi, SNKRDUNK, Rakuten, Vinted…")
+    M.typed(jid)
+    s = load(A.search_path(sid)) or {}
+    nr = (s.get("no_results") or {}).get("not_read") or []
+    say(progress=100, status="done", sha=push(sid, final=True), count=count(sid),
+        message=f"Lista: {count(sid)} anuncios." + (f" No se pudieron leer: {', '.join(nr)}." if nr else ""))
+    if NUMBER:
+        try: api(f"/issues/{NUMBER}/labels", "POST", {"labels": ["movil-hecha"]})
+        except Exception as e: print("  label not added:", e)
+    publish_page()
+    print(f"{count(sid)} anuncios -> api/results/{sid}.json")
+
+if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    try:
+        main()
+    except BaseException as e:
+        traceback.print_exc()
+        say(status="error", message=f"No se pudo terminar la búsqueda ({type(e).__name__}). Inténtalo otra vez.")
+        if NUMBER:
+            try: api(f"/issues/{NUMBER}/labels", "POST", {"labels": ["movil-error"]})
+            except Exception: pass
+        sys.exit(1)

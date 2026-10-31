@@ -1,0 +1,189 @@
+{
+ "_how_to_use": "Owner's settings for the Japanese Gold Star screener. Confirmed 14 October 2026; scope changed by the owner on 15 October 2026 (in chat). Never change a setting the owner did not confirm. The screener runs when the owner asks (project skill 'gold-stars'), not on a schedule.",
+ "owner": {
+  "language": "UK English",
+  "no_acronyms_in_messages": true,
+  "exact_figures": true,
+  "time_zone": "Europe/Madrid",
+  "home_area": "Madrid, Spain",
+  "home_area_slug": "madrid"
+ },
+ "market": {
+  "category": "Pokémon graded cards (specific cards only, no sealed products)",
+  "ebay_site": "ebay.es",
+  "currency": "EUR",
+  "buying_regions": [
+   "Europe first, any country (Spain not required); Spain and the rest of the European Union with no import costs",
+   "Non-EU Europe, e.g. United Kingdom: every import cost itemised",
+   "Rest of the world only when a card has no European listing: every import cost itemised"
+  ],
+  "price_bands_eur": [
+   [
+    0,
+    8000
+   ]
+  ],
+  "graders_accepted": [
+   "PSA"
+  ],
+  "grades_tracked": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "6",
+   "7",
+   "8",
+   "9",
+   "10"
+  ],
+  "card_list": "Japanese Gold Stars only (screener/cards.json); the 82 all-cards searches are archived in screener/old_all_cards_screener"
+ },
+ "priority_group": {
+  "name": "Japanese Gold Star Play promos",
+  "cards": [
+   "Vaporeon Gold Star 022/PLAY",
+   "Jolteon Gold Star 023/PLAY",
+   "Flareon Gold Star 024/PLAY"
+  ],
+  "note": "Only the Play promos. NOT the World Championships cards that came in packs.",
+  "language_required": "Japanese",
+  "ungraded_allowed": true,
+  "rule_out_words": [
+   "World Championships",
+   "World Championship",
+   "WCS",
+   "Worlds"
+  ],
+  "unclear_play_vs_worlds": "flag 'Listing details conflict'",
+  "search_scope": "Europe first; worldwide if no European listing",
+  "report_first": "Every morning message and the top of the dashboard open with this group: new listings since the previous night and where, or 'none new'.",
+  "to_do_at_build": "find each card's PriceCharting page (graded and ungraded prices) and write its search entries in the searches.json shape"
+ },
+ "schedule": {
+  "mode": "on demand (owner runs it); no scheduled task",
+  "note": "the earlier daily 10:00 schedule was dropped on 15 October 2026"
+ },
+ "ebay_pacing": {
+  "between_search_pages_seconds": [
+   120,
+   180
+  ],
+  "between_listing_or_seller_pages_seconds": [
+   20,
+   50
+  ],
+  "after_every_10_listing_pages_seconds": [
+   120,
+   240
+  ],
+  "on_error_page": "wait 20 minutes, retry once, then stop reading eBay for the night"
+ },
+ "filters": {
+  "title_exact_item_number_grader_grade": "required, except grader and grade for the priority group (ungraded allowed)",
+  "rule_out_different_grading_company_in_condition_field": true,
+  "keep_and_flag_different_grade_number": true,
+  "price_and_postage_from_listing_page": true,
+  "read_slab_label_in_main_photo": true,
+  "unreadable_label": "never rule out: mark 'Slab label not readable' for the owner to check",
+  "reprint_words_for_vintage": [
+   "Celebrations",
+   "Classic Collection",
+   "25th Anniversary"
+  ],
+  "seller_words_that_rule_out": [
+   "proxy",
+   "custom",
+   "reprint",
+   "replica",
+   "empty",
+   "resealed",
+   "weighed",
+   "searched",
+   "ungraded",
+   "pre-grade"
+  ],
+  "seller_words_exception": "'ungraded' does not rule out a priority-group listing",
+  "check_certificates_on": "psacard.com"
+ },
+ "signals": {
+  "minimum_profit_percent": 10,
+  "minimum_liquidity_index": 7,
+  "opening_offer_percent_of_reference": 60,
+  "expected_settlement_percent_of_reference": 80,
+  "small_seller": "private seller with under 100 feedback",
+  "auction_alert_minutes_before_end": 5
+ },
+ "costs_to_resource_at_setup": [
+  "eBay Buyer Protection fee for Spain (ebay.es)",
+  "insured postage service and prices for resale from Spain",
+  "import duty, Spanish VAT and carrier handling fee for goods from outside the European Union",
+  "European Central Bank exchange rates (fetched daily)"
+ ],
+ "other_marketplaces_tab": [
+  "Facebook Marketplace (Madrid)",
+  "Wallapop (Madrid), in place of Gumtree",
+  "Cardmarket"
+ ],
+ "portfolio": [],
+ "price_source": {
+  "value": "none for now",
+  "confirmed": "15 October 2026, by the owner in chat",
+  "why": "PriceCharting refuses automated reading (HTTP 403 and a Cloudflare security check, 14 October 2026); eBay sold listings on ebay.es and ebay.com require signing in. Listings are found, checked and costed, but carry no market value, profit or Buy / Offer / Auction signal.",
+  "options_later": [
+   "PriceCharting subscription with an API key",
+   "the owner signs in to ebay.es in the browser (not recommended)"
+  ]
+ },
+ "certificates": {
+  "psacard_com": "blocked by a security check (14 October 2026)",
+  "psa_api_key": "optional: the owner's free PSA account key saved as data/psa_token.txt enables certificate checks (100 a day)"
+ },
+ "dashboard_url": "",
+ "scope_15_october_2026": {
+  "focus": "Japanese Gold Star (☆) cards only; all other cards dropped",
+  "priority": "The five Japanese Gold Star Play promos: Vaporeon 022/PLAY, Jolteon 023/PLAY, Flareon 024/PLAY, Espeon 025/PLAY and Umbreon 026/PLAY (Players Club, 2005-2006; Espeon and Umbreon added by the owner on 15 October 2026). Vaporeon, Jolteon and Flareon count ONLY as these Play promos (their World Champions Pack cards 015, 027 and 011 of 108 are not tracked); the Umbreon 25th Anniversary reprint 012/025 is not tracked",
+  "other_gold_stars": "every other Japanese Gold Star is shown too; unlimited prints ranked above 1st Edition",
+  "naming": "titles can be wrong in both directions: listings of the five Play promos on free-text sites are checked on their photo, and the photo decides",
+  "sites": [
+   "eBay (ebay.es, worldwide)",
+   "GempireCards (gempirecards.com): eBay worldwide including sellers that do not ship to Spain, plus ALT, Fanatics Collect and Goldin auctions; owner's double check for eBay, added 15 October 2026",
+   "Mercari (Japan)",
+   "Yahoo! Auctions Japan through Buyee (Yahoo blocks European Union visitors; Buyee's search pages are readable, added 15 October 2026)",
+   "SNKRDUNK (Japan)",
+   "Rakuma (Japan)",
+   "Card Rush (Japan)",
+   "Magi (Japan)",
+   "Wallapop",
+   "Vinted"
+  ],
+  "sites_not_readable": {
+   "Yahoo! Auctions Japan": "blocked for European Union visitors since 2022; read through Buyee instead",
+   "Cardmarket": "Cloudflare security check in Claude's browser (checked again 15 October 2026); not bypassed. Could be read in the owner's own Chrome if the owner agrees",
+   "Facebook Marketplace": "needs signing in; link"
+  },
+  "run": "on demand: every time the owner runs it, all sites are searched and the dashboard shows new listings, listings seen before (with price changes) and listings no longer found, each with price and link",
+  "price_limit": "none for Gold Stars (the 8,000 EUR band applied to the earlier all-cards screener)",
+  "card_list": "screener/cards.json (27 cards; sources: Bulbapedia, Bill's Archive, Card Rush, checked 15 October 2026)",
+  "search_depth": "owner, 15 October 2026 (Jolteon listings missed): several search terms per Play promo on every site, eBay searched both by newest and by best match, Mercari search pages scrolled to the end and truncated titles opened on the listing page"
+ },
+ "shipping_to_spain": {
+  "checked": "15 October 2026",
+  "rules": "screener/shipping.json",
+  "sources": [
+   "buyee.jp help pages (Spain, fees, plans)",
+   "docs.channel.io SNKRDUNK FAQ (countries, July 2025)",
+   "zenmarket.jp, neokyo.com fees",
+   "en.magi.camp/guides/1",
+   "about.wallapop.com shipping terms (24 July 2026)",
+   "vinted.es price list (5 October 2026)"
+  ],
+  "owner_request": "each listing shows whether it ships to Spain and how (15 October 2026)"
+ },
+ "cloud_url": "https://jmmtejeda.github.io/pokefinder",
+ "_cloud_url": "The owner's PokéFinder web page for the phone (public link, opens anywhere, computer off; asking for searches needs the phone key in the link, see `python nube.py link`). GitHub Pages of the public repository github_repo on the owner's GitHub account (JMMTejeda), since 30 October 2026 (Cloudflare started charging). Built by screener/scripts/nube.py, published with cloud/publicar.bat. cloud_url_cloudflare_old and cloud_url_claude_old are earlier pages (no longer updated).",
+ "github_repo": "JMMTejeda/pokefinder",
+ "cloud_url_cloudflare_old": "",
+ "cloud_url_claude_old": ""
+}
