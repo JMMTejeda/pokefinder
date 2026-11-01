@@ -265,13 +265,13 @@ def admin(set_=(), merge=(), delete=()):
 
 def request_of(i):
     """A GitHub issue -> a phone request {id, query | group, at, status, job, phone} (only the owner's)."""
-    m = re.match(r"\s*(buscar|grupo):\s*(.+)", i.get("title") or "", re.I)
+    m = re.match(r"\s*(buscar|grupo|borrar):\s*(.+)", i.get("title") or "", re.I)
     if not m or i.get("pull_request") or (i.get("user") or {}).get("login", "").lower() != owner(): return None
     lab = {l["name"] for l in i.get("labels", [])}
     st = next((v for k, v in LABELS.items() if k in lab and v in ("rejected", "replaced")), "done") if i["state"] == "closed" \
         else "taken" if "tomada" in lab else "asked" if "esperando-ok" in lab else "new"
     r = {"id": f"i{i['number']}", "at": int(dt.datetime.fromisoformat(i["created_at"].replace("Z", "+00:00")).timestamp() * 1000), "status": st}
-    r["group" if m.group(1).lower() == "grupo" else "query"] = m.group(2).strip()[:120]
+    r[{"grupo": "group", "borrar": "delete"}.get(m.group(1).lower(), "query")] = m.group(2).strip()[:120]
     if "movil-hecha" in lab: r["phone"] = "done"
     elif "movil-error" in lab: r["phone"] = "error"
     return r
@@ -364,7 +364,7 @@ def waiting_requests(st=None):
     waits until it ends: the computer then completes it instead of searching it at the same time (31 October 2026)."""
     st = st or state()
     github = lambda r: r.get("query") and not r.get("phone") and time.time() * 1000 - r["at"] < 45 * 60e3
-    return [r for r in st.get("requests", []) if r.get("status") in ("new", "asked") and (r.get("query") or r.get("group")) and not github(r)]
+    return [r for r in st.get("requests", []) if r.get("status") in ("new", "asked") and (r.get("query") or r.get("group") or r.get("delete")) and not github(r)]
 
 def pending_cmd():
     """For the scheduled check: tells the page Claude is checking (heartbeat) and prints the waiting requests (JSON list)."""
@@ -391,6 +391,18 @@ def requests_cmd(only=None):
     out = []
     for r in waiting_requests(st):
         if only and r["id"] not in only: continue
+        if r.get("delete"):   # "Borrar: <id>" from the phone page (owner, 1 November 2026): the saved search goes, here and on the page
+            sid = r["delete"]
+            try:
+                req = urllib.request.Request("http://127.0.0.1:8800/api/delete", data=json.dumps({"id": sid}).encode(),
+                                             headers={"Content-Type": "application/json"})
+                urllib.request.urlopen(req, timeout=20).read()
+                gone = [{"coll": "results", "id": sid}] if os.path.exists(doc_path("results", sid)) else []
+                admin(merge=[{"coll": "requests", "id": r["id"], "data": {"status": "done"}}], delete=gone)
+                out.append({"request": r["id"], "deleted": sid})
+            except Exception as e:
+                out.append({"request": r["id"], "delete": sid, "error": f"{type(e).__name__}: {e}"})
+            continue
         q = re.sub(r"\s+", " ", str(r.get("query") or ""))[:120].strip()
         ask = {"group": r["group"]} if r.get("group") in A.GROUPS else {"query": q}
         try:
