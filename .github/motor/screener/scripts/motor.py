@@ -194,7 +194,13 @@ LANGS = {
     "de": (r"german|deutsch|alem[aá]n|tedesco|allemand|\bger\b", {"alemán", "aleman", "german", "deutsch"}),
     "it": (r"italian\w*|italiano|italien|\bita\b", {"italiano", "italian", "italiana"}),
 }
-JP_SITES = {"mercari", "rakuma", "magi", "cardrush", "snkrdunk", "hareruya2", "rakuten", "buyee", "paypay", "yshop"}
+JP_SITES = {"mercari", "rakuma", "magi", "cardrush", "snkrdunk", "hareruya2", "rakuten", "buyee", "paypay", "yshop", "mandarake", "yuyutei", "clabo", "jauce"}
+# two kinds of search (owner, 1 November 2026): "light", quick (eBay and the three biggest Japanese sites), and "full", slow (every
+# market, plus Japanese shops such as Mandarake, Yuyu-tei and Card Labo, and the collectors' forum Elite Fourum)
+LIGHT_SITES = ("mercari", "snkrdunk", "magi")
+FULL_SITES = ("mercari", "rakuma", "magi", "cardrush", "snkrdunk", "hareruya2", "rakuten", "mandarake", "yuyutei", "clabo", "gempire", "vinted",
+              "elitefourum", "buyee", "wallapop", "jauce", "cherry", "monstermart", "pokemonplug", "japantcg")
+def depth_of(j): return "light" if (j or {}).get("depth") == "light" else "full"
 
 def plan_spec(query):
     """Typed search -> app_job.py spec: words every title must have (en), Japanese name (ja), what is typed on Japanese sites (qja),
@@ -496,7 +502,7 @@ def typed(jid):
         run(["app_job.py", "ebay", jid], check=False)
     spec = exact_card(plan_spec(j["query"]))
     jj = job(jid); jj["spec"] = spec; save(A.job_path(jid), jj)
-    sites = [s for s in ("mercari", "rakuma", "magi", "cardrush", "snkrdunk", "hareruya2", "rakuten", "gempire", "vinted", "buyee", "wallapop")
+    sites = [s for s in (LIGHT_SITES if depth_of(j) == "light" else FULL_SITES)
              if s not in SKIP and not (spec.get("lang") not in (None, "ja") and s in JP_SITES)]   # Japanese shops sell Japanese cards
     run(["app_job.py", "plan", jid, "--q", spec["q"], "--sites", ",".join(sites)])
     put(jid, status="running", message="Buscando en los mercados…")
@@ -522,7 +528,7 @@ def group(jid):
     if not j.get("planned"):   # a refresh cut off (the app closed) carries on from the pages already read
         put(jid, status="running", progress=5, started=A.now_iso(), message="Preparando la búsqueda…")
         run(["start_run.py"]); run(["fx.py"], check=False)
-        run(["make_plan.py", mode])
+        run(["make_plan.py", mode] + (["--light"] if depth_of(j) == "light" else []))
         if HAS_KEYS:
             put(jid, progress=8, message="Buscando en eBay (API)…"); run(["ebay_api.py", mode])
         put(jid, planned=True)

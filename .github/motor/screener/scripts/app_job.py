@@ -43,6 +43,19 @@ SITES = {
     "wallapop": ("en", "https://es.wallapop.com/search?keywords={q}&order_by=newest"),
     "vinted":   ("en", "https://www.vinted.es/catalog?search_text={q}&order=newest_first"),
     "rakuten":  ("ja", "https://search.rakuten.co.jp/search/mall/{q}/"),   # Rakuten Ichiba (motor.py, 28 October 2026)
+    # full search only (1 November 2026): Mandarake (ships to Spain itself; stores in Ikebukuro, Nakano, Akihabara...), Yuyu-tei and
+    # Card Labo (Japanese card shops, through a proxy), and Elite Fourum's buy and sell section (collectors' sale threads)
+    "mandarake": ("ja", "https://order.mandarake.co.jp/order/listPage/list?keyword={q}"),
+    "yuyutei":  ("ja", "https://yuyu-tei.jp/sell/poc/s/search?search_word={q}"),
+    "clabo":    ("ja", "https://www.c-labo-online.jp/product-list?keyword={q}"),
+    "elitefourum": ("en", "https://www.elitefourum.com/search?q={q}%20%23buy-section%20order%3Alatest"),
+    # more markets (1 November 2026): Yahoo! Auctions through Jauce (a proxy that ships to Spain), and card shops whose search answers
+    # in plain data (Shopify): Cherry Collectables and Monster Mart (Australia), Pokemon Plug (US), Japan TCG (Japan)
+    "jauce":    ("ja", "https://www.jauce.com/search/{q}"),
+    "cherry":   ("en", "https://www.cherrycollectables.com.au/search/suggest.json?q={q}&resources%5Btype%5D=product&resources%5Blimit%5D=10"),
+    "monstermart": ("en", "https://www.monstermart.com.au/search/suggest.json?q={q}&resources%5Btype%5D=product&resources%5Blimit%5D=10"),
+    "pokemonplug": ("en", "https://pokemonplug.com/search/suggest.json?q={q}&resources%5Btype%5D=product&resources%5Blimit%5D=10"),
+    "japantcg": ("en", "https://japantcg.com/search/suggest.json?q={q}&resources%5Btype%5D=product&resources%5Blimit%5D=10"),
     "ebay":     ("en", "https://www.ebay.es/sch/i.html?_nkw={q}&_ipg=240"),   # only without eBay API keys
 }
 ACCESSORY = re.compile(r"\bstands?\b|\bdisplay\b|\bextended\s*art(?:work)?\b(?!.*\bholo)|\bfor\s+(?:graded\s+)?(?:slabs?|psa|cards?)\b"
@@ -239,6 +252,9 @@ def cmd_plan(jid):
     keep = "|".join(re.escape(x) for x in [first] + spec.get("alias", {}).get(first, []) + spec.get("poke", []) if x)
     d = bdir(j); os.makedirs(os.path.join(d, "pages"), exist_ok=True)
     pages = [p for p in load(os.path.join(d, "pages.json"), []) if p.get("api")]
+    if "mandarake" in sites:   # Mandarake's search needs one visit to its shop first (a cookie); the engine keeps cookies
+        pages.append({"site": "mandarake", "label": "Mandarake: entrada a la tienda", "card_key": None, "url": "https://order.mandarake.co.jp/order/",
+                      "js": "(async()=>JSON.stringify({blocked:false,n:0,rows:[]}))()", "viewport": "tall"})
     q_en = (args("--q") or [spec["en"]])[0]   # what is typed on each site; the matching uses spec en/must/not
     spec["q"] = q_en
     for site in sites:

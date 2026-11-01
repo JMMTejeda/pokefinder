@@ -271,7 +271,10 @@ def request_of(i):
     st = next((v for k, v in LABELS.items() if k in lab and v in ("rejected", "replaced")), "done") if i["state"] == "closed" \
         else "taken" if "tomada" in lab else "asked" if "esperando-ok" in lab else "new"
     r = {"id": f"i{i['number']}", "at": int(dt.datetime.fromisoformat(i["created_at"].replace("Z", "+00:00")).timestamp() * 1000), "status": st}
-    r[{"grupo": "group", "borrar": "delete"}.get(m.group(1).lower(), "query")] = m.group(2).strip()[:120]
+    text = m.group(2).strip()
+    if re.search(r"\[\s*completa\s*\]\s*$", text, re.I): r["depth"] = "full"   # "Buscar: <text> [completa]": full search
+    text = re.sub(r"\s*\[\s*completa\s*\]\s*$", "", text, flags=re.I)[:120]
+    r[{"grupo": "group", "borrar": "delete"}.get(m.group(1).lower(), "query")] = text
     if "movil-hecha" in lab: r["phone"] = "done"
     elif "movil-error" in lab: r["phone"] = "error"
     return r
@@ -404,7 +407,7 @@ def requests_cmd(only=None):
                 out.append({"request": r["id"], "delete": sid, "error": f"{type(e).__name__}: {e}"})
             continue
         q = re.sub(r"\s+", " ", str(r.get("query") or ""))[:120].strip()
-        ask = {"group": r["group"]} if r.get("group") in A.GROUPS else {"query": q}
+        ask = {**({"group": r["group"]} if r.get("group") in A.GROUPS else {"query": q}), "depth": r.get("depth") or "light"}
         try:
             req = urllib.request.Request("http://127.0.0.1:8800/api/search", data=json.dumps(ask).encode(),
                                          headers={"Content-Type": "application/json"})

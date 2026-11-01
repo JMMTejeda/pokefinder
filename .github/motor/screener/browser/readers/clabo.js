@@ -1,0 +1,2 @@
+for(const a of document.querySelectorAll('a[href*="/product/"]')){const m=a.href.match(/\/product\/(\d+)/);if(!m||!a.innerText.trim())continue;const t=clean(up(a,/円/).innerText);const pm=t.match(/([\d,]+)円/);
+add('clb'+m[1],a.href.split('?')[0],t.replace(/[\d,]+円.*$/,''),pm?'¥'+pm[1]:'',/在庫なし|売り切れ|SOLD/.test(t)?'sold':'on sale','Card Labo (shops in Ikebukuro and across Japan), price including Japanese tax')}

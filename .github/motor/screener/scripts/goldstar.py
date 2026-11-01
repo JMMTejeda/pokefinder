@@ -84,7 +84,7 @@ def identify(title, site):
                       or any(re.search(re.escape(norm(x)) + r"\s*☆", t) for x in c["names"]))
         if not (named_star or PLAY_SIGN.search(t) or any(norm(n) in t for n in c.get("numbers", []))):
             return None, "☆ only as decoration"
-    jp_site = site in ("mercari", "rakuma", "magi", "cardrush", "snkrdunk", "buyee", "hareruya2", "paypay", "yshop", "rakuten")
+    jp_site = site in ("mercari", "rakuma", "magi", "cardrush", "snkrdunk", "buyee", "hareruya2", "paypay", "yshop", "rakuten", "mandarake", "yuyutei", "clabo", "jauce", "japantcg")
     if ENGLISH.search(t) and not re.search(r"日本語|japanese|japon", t): return None, "English card"
     if not jp_site and not JAPANESE.search(t) and not any(norm(n) in t for n in c.get("numbers", [])):
         return None, "not stated as Japanese"
@@ -105,8 +105,9 @@ def site_of(url):
     h = re.sub(r"^https?://", "", url).split("/")[0]
     if "buyee.jp/paypayfleamarket" in url: return "paypay"
     if "/jdirectitems/shopping" in url: return "yshop"
-    for k in ("ebay", "mercari", "snkrdunk", "fril", "cardrush", "magi", "wallapop", "vinted", "buyee", "gempire", "hareruya2", "rakuten"):
-        if k in h: return {"fril": "rakuma"}.get(k, k)
+    for k in ("ebay", "mercari", "snkrdunk", "fril", "cardrush", "magi", "wallapop", "vinted", "buyee", "gempire", "hareruya2", "rakuten",
+              "mandarake", "yuyu-tei", "c-labo", "elitefourum", "jauce", "cherrycollectables", "monstermart", "pokemonplug", "japantcg"):
+        if k in h: return {"fril": "rakuma", "yuyu-tei": "yuyutei", "c-labo": "clabo", "cherrycollectables": "cherry"}.get(k, k)
     return h
 
 # Buy now or auction (owner, 18 October 2026: separate tabs). Auction signs: bids or time left on the search page (eBay "puja",
@@ -127,7 +128,12 @@ SHIPPING = load(os.path.join(SCREENER, "shipping.json"), {})
 
 SITE_NAME = {"ebay": "eBay", "mercari": "Mercari", "snkrdunk": "SNKRDUNK", "rakuma": "Rakuma", "cardrush": "Card Rush", "magi": "Magi", "hareruya2": "Hareruya2",
              "wallapop": "Wallapop", "vinted": "Vinted", "buyee": "Yahoo! Auctions or PayPay Flea Market (via Buyee)", "gempire": "Other auction house (via Gempire)",
-             "paypay": "PayPay Flea Market (via Buyee)", "yshop": "Yahoo! Shopping (via Buyee)", "rakuten": "Rakuten Ichiba"}
+             "paypay": "PayPay Flea Market (via Buyee)", "yshop": "Yahoo! Shopping (via Buyee)", "rakuten": "Rakuten Ichiba",
+             "mandarake": "Mandarake", "yuyutei": "Yuyu-tei", "clabo": "Card Labo", "elitefourum": "Elite Fourum (foro)",
+             # more markets (owner, 1 November 2026: "Australia, more Japanese shops, more sites"): Yahoo! Auctions through the proxy Jauce
+             # (ships to Spain), the Australian shops Cherry Collectables and Monster Mart, Pokemon Plug (US) and Japan TCG
+             "jauce": "Yahoo! Auctions (via Jauce)", "cherry": "Cherry Collectables (Australia)", "monstermart": "Monster Mart (Australia)",
+             "pokemonplug": "Pokemon Plug", "japantcg": "Japan TCG"}
 
 # ---- read this run's pages
 read_ok, refused, found, title_checks = set(), [], {}, []
@@ -230,7 +236,7 @@ for k, r in found.items():
     change = None
     if prev and prev.get("price_text") and prev["price_text"] != r["price_text"]:
         change = f"price was {prev['price_text']} on {prev['last_seen'][:10]}"
-    jp = r["site"] in ("mercari", "rakuma", "magi", "cardrush", "snkrdunk", "buyee", "hareruya2", "paypay", "yshop", "rakuten")
+    jp = r["site"] in ("mercari", "rakuma", "magi", "cardrush", "snkrdunk", "buyee", "hareruya2", "paypay", "yshop", "rakuten", "mandarake", "yuyutei", "clabo", "jauce", "japantcg")
     ship_rule = SHIPPING.get(r["site"], {})
     ship_page = "; ".join(lp.get("ship") or []) if lp else ""
     if lp.get("no_ship_to_spain"): ships, how = "No", "The listing says it does not ship to Spain"

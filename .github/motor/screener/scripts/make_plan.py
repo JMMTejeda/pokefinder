@@ -21,6 +21,9 @@ if OTHERS: CARDS = [c for c in CARDS if not c["priority"]]
 # an others run searches each card with every wording sellers use, as the Play promos are (owner, 22 October 2026: many were missed);
 # a full run too (owner, 26 October 2026: "run every Gold Star again, up to date, on more markets")
 DEEP = not QUICK
+LIGHT = "--light" in sys.argv   # quick refresh (owner, 1 November 2026): eBay (API), Mercari, SNKRDUNK and Magi, one wording each
+FULL = not LIGHT                # full refresh: every market, plus Mandarake, Yuyu-tei, Card Labo and the Elite Fourum forum
+if LIGHT: DEEP = False
 if THREE:
     for c in CARDS:
         if c["key"] in ("espeon_play", "umbreon_play"): c["priority"] = False
@@ -46,6 +49,35 @@ def q(s): return quote(s, safe="")
 pages = []
 def add(site, label, url, cards, card_key=None):
     pages.append({"site": site, "label": label, "card_key": card_key, "url": url, "js": js(site, keep_regex(cards), cards)})
+
+def light_pages(c):
+    ja = c["names"][0]
+    t = f"{ja} {c['number'].split('/')[0]}/PLAY" if c["key"].endswith("_play") else f"{ja} スター"
+    add("mercari", f"Mercari: {t}", f"https://jp.mercari.com/search?keyword={q(t)}&status=on_sale", [c], c["key"])
+    add("magi", f"Magi: {ja}☆", f"https://magi.camp/items/search?forms_search_items%5Bkeyword%5D={q(ja + '☆')}", [c], c["key"])
+    if c["key"] in snkr:
+        for pid in snkr[c["key"]]:
+            add("snkrdunk", f"SNKRDUNK copies for sale: {c['name_en']} ({pid})", f"https://snkrdunk.com/apparels/{pid}/used", [c], c["key"])
+    else:
+        add("snkrdunk", f"SNKRDUNK search: {ja} {c['number']}", f"https://snkrdunk.com/search?keywords={q(ja + '☆ ' + c['number'])}", [c], c["key"])
+
+def full_pages(c):
+    """The markets only a full search reads (1 November 2026). Mandarake (ships to Spain itself; stores in Ikebukuro, Nakano and
+    Akihabara) and Card Labo search by name; Yuyu-tei lists cards by number; the forum is searched in English."""
+    ja, en = c["names"][0], c["pokemon"].lower()
+    for t in (f"{ja} スター", f"{ja}☆ {c['number'].split('/')[0]}"):
+        add("mandarake", f"Mandarake: {t}", f"https://order.mandarake.co.jp/order/listPage/list?keyword={q(t)}", [c], c["key"])
+    add("yuyutei", f"Yuyu-tei: {ja}", f"https://yuyu-tei.jp/sell/poc/s/search?search_word={q(ja)}", [c], c["key"])
+    add("clabo", f"Card Labo: {ja}☆", f"https://www.c-labo-online.jp/product-list?keyword={q(ja + '☆')}", [c], c["key"])
+    add("elitefourum", f"Elite Fourum: {en} gold star", "https://www.elitefourum.com/search?q=" + q(f"{en} gold star #buy-section order:latest"), [c], c["key"])
+    # more markets (owner, 1 November 2026): Yahoo! Auctions through Jauce (ships to Spain), and shops whose search answers in plain
+    # data, 10 products a time: Cherry Collectables and Monster Mart (Australia), Pokemon Plug (US), Japan TCG
+    for t in (f"{ja} ☆", f"{ja} ゴールドスター"):
+        add("jauce", f"Yahoo! Auctions (Jauce): {t}", "https://www.jauce.com/search/" + q(t), [c], c["key"])
+    for site, host in (("cherry", "www.cherrycollectables.com.au"), ("monstermart", "www.monstermart.com.au"), ("pokemonplug", "pokemonplug.com"),
+                       ("japantcg", "japantcg.com")):
+        t = f"{c['pokemon']} star" if site == "japantcg" else f"{c['pokemon']} gold star"
+        add(site, f"{site}: {t}", f"https://{host}/search/suggest.json?q={q(t)}&resources%5Btype%5D=product&resources%5Blimit%5D=10", [c], c["key"])
 
 def jp_pages(c):
     """Japanese sites. Play promos get several wordings (owner, 15 October 2026: Jolteon listings were being missed), because sellers
@@ -110,8 +142,14 @@ if DEEP:   # one eBay search per card: the two broad searches stop at 240 result
 
 order = ([] if OTHERS else [c for c in CARDS if c["priority"]]) + ([] if QUICK else [c for c in CARDS if not c["priority"]])
 if EBAY_API: ebay = []   # read by ebay_api.py instead (no pauses, eBay worldwide)
-for c in order: gempire(c)
-for c in order: jp_pages(c)
+if LIGHT:
+    for c in order: light_pages(c)
+else:
+    for c in order: gempire(c)
+    for c in order: jp_pages(c)
+    pages.append({"site": "mandarake", "label": "Mandarake: entrada a la tienda", "card_key": None, "url": "https://order.mandarake.co.jp/order/",
+                  "js": "(async()=>JSON.stringify({blocked:false,n:0,rows:[]}))()"})   # its search needs one visit to the shop first (a cookie)
+    for c in order: full_pages(c)
 eu = [("wallapop", "Wallapop: gold star pokemon", "https://es.wallapop.com/search?keywords=" + q("gold star pokemon") + "&order_by=newest"),
       ("wallapop", "Wallapop: pokemon estrella japonesa", "https://es.wallapop.com/search?keywords=" + q("pokemon star japonesa") + "&order_by=newest"),
       ("vinted", "Vinted: gold star pokemon", "https://www.vinted.es/catalog?search_text=" + q("gold star pokemon") + "&order=newest_first"),
@@ -129,6 +167,7 @@ if not QUICK:   # broad searches on the new Japanese markets (26 October 2026): 
 if QUICK:
     eu = [("wallapop", "Wallapop: gold star play pokemon", "https://es.wallapop.com/search?keywords=" + q("gold star play pokemon") + "&order_by=newest"),
           ("vinted", "Vinted: gold star pokemon", "https://www.vinted.es/catalog?search_text=" + q("gold star pokemon") + "&order=newest_first")]
+if LIGHT: eu = []   # a quick refresh skips the broad European and Japanese searches
 for s, label, url in eu: pages.append({"site": s, "label": label, "card_key": None, "url": url, "js": js(s, keep_regex(CARDS), CARDS)})
 
 # spread the eBay pages through the plan (other sites are read in between; pause.py keeps eBay pages 2 minutes apart)

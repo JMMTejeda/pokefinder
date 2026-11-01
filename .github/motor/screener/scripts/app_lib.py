@@ -16,7 +16,7 @@ GROUPS = {
     "gold_stars": {"label": "Gold Stars", "desc": "Every other Japanese Gold Star (2004 to 2007)",
                    "cards": [c for c in CARDS if not c.get("priority")]},
 }
-JP_SITES = {"Mercari", "Rakuma", "Magi", "Card Rush", "Hareruya2", "SNKRDUNK", "Yahoo! Auctions or PayPay Flea Market (via Buyee)", "Buyee",
+JP_SITES = {"Yahoo! Auctions (via Jauce)", "Japan TCG", "Mandarake", "Yuyu-tei", "Card Labo", "Mercari", "Rakuma", "Magi", "Card Rush", "Hareruya2", "SNKRDUNK", "Yahoo! Auctions or PayPay Flea Market (via Buyee)", "Buyee",
             "PayPay Flea Market (via Buyee)", "Yahoo! Shopping (via Buyee)", "Rakuten Ichiba"}
 EU_SITES = {"Wallapop", "Vinted"}
 EU_ISO = set("AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE".split())
@@ -127,7 +127,13 @@ def from_screener(r, image=None):
 
 SITE_NAME = {"ebay": "eBay", "gempire": "Gempire", "mercari": "Mercari", "rakuma": "Rakuma", "buyee": "Yahoo! Auctions (Buyee)", "magi": "Magi",
              "cardrush": "Card Rush", "hareruya2": "Hareruya2", "snkrdunk": "SNKRDUNK", "wallapop": "Wallapop", "vinted": "Vinted",
-             "paypay": "PayPay Flea Market (via Buyee)", "yshop": "Yahoo! Shopping (via Buyee)", "rakuten": "Rakuten Ichiba"}
+             "paypay": "PayPay Flea Market (via Buyee)", "yshop": "Yahoo! Shopping (via Buyee)", "rakuten": "Rakuten Ichiba",
+             # full search only (owner, 1 November 2026: "more markets: Japanese shops like Ikebukuro's, forums, odd sites that ship to Spain")
+             "mandarake": "Mandarake", "yuyutei": "Yuyu-tei", "clabo": "Card Labo", "elitefourum": "Elite Fourum (foro)",
+             # more markets (owner, 1 November 2026: "Australia, more Japanese shops, more sites"): Yahoo! Auctions through the proxy Jauce
+             # (ships to Spain), the Australian shops Cherry Collectables and Monster Mart, Pokemon Plug (US) and Japan TCG
+             "jauce": "Yahoo! Auctions (via Jauce)", "cherry": "Cherry Collectables (Australia)", "monstermart": "Monster Mart (Australia)",
+             "pokemonplug": "Pokemon Plug", "japantcg": "Japan TCG"}
 
 BAD_PHOTO = re.compile(r"dummy|placeholder|loading|blank|spacer|noimage|lazy-", re.I)
 def photo_of(site, r):

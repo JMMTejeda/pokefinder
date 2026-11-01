@@ -1,0 +1,2 @@
+for(const a of document.querySelectorAll('li a[href*="/auction/"]')){const m=a.href.match(/\/auction\/([a-z]?\d{6,})/);if(!m)continue;const im=a.querySelector('img');const t=clean(a.innerText);const pm=t.match(/([\d,]+)\s*yen/i);const tl=t.match(/Time left:\s*([^\n]+?)(?=$|Bid|Buy)/i);
+add('jau'+m[1],'https://www.jauce.com/auction/'+m[1],im?im.alt:'',pm?'¥'+pm[1]:'','on sale',(/Bid/i.test(t)?'Yahoo! Auctions (Japan) via Jauce, bids open; ':'Yahoo! Auctions (Japan) via Jauce; ')+(tl?'Time left: '+tl[1]+'; ':'')+'Located in Japan');if(im)rows[rows.length-1].image=im.src}

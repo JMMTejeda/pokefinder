@@ -1,0 +1,2 @@
+for(const c of document.querySelectorAll('.card-product')){const a=c.querySelector('a[href*="/sell/poc/card/"]');if(!a)continue;const m=a.href.match(/\/card\/([^/?#]+)\/([^/?#]+)/);if(!m)continue;const t=clean(c.innerText);const pm=t.match(/([\d,]+)\s*円/);const st=t.match(/在庫\s*:\s*(\S+)/);
+add('yyt'+m[1]+'-'+m[2],a.href.split('?')[0],t.replace(/[\d,]+\s*円.*$/,''),pm?'¥'+pm[1]:'',(st&&/×|0/.test(st[1]))?'sold':'on sale',st?'stock '+st[1]+', price including Japanese tax':'')}

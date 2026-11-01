@@ -28,7 +28,9 @@ REPO_DIR = os.path.dirname(HERE)
 # take the pushes of other searches before its own (31 October 2026: "charizard 4/102" could not push its results)
 MOTOR = os.path.join(os.environ.get("RUNNER_TEMP") or tempfile.gettempdir(), "pokefinder-motor")
 REPO, NUMBER, BRANCH = os.environ.get("GITHUB_REPOSITORY", ""), os.environ.get("NUMBER") or "", os.environ.get("BRANCH") or "main"
-QUERY = re.sub(r"\s+", " ", re.sub(r"^\s*Buscar:\s*", "", os.environ.get("TITLE", ""), flags=re.I)).strip()[:120]
+QUERY = re.sub(r"\s+", " ", re.sub(r"^\s*Buscar:\s*", "", os.environ.get("TITLE", ""), flags=re.I)).strip()[:160]
+DEPTH = "full" if re.search(r"\[\s*completa\s*\]\s*$", QUERY, re.I) else "light"   # light: quick; full: every market (1 November 2026)
+QUERY = re.sub(r"\s*\[\s*completa\s*\]\s*$", "", QUERY, flags=re.I).strip()[:120]
 MARK = "<!-- pokefinder "   # the page finds the state in the comment by this (template.html phoneState)
 CACHE_BRANCH = "cache-buscador"
 KEPT = {"checks.json": ("app", "checks.json"), "images.json": ("app", "images.json"), "gone.json": ("app", "images", "gone.json")}
@@ -266,7 +268,7 @@ def new_job(query):
     """server.new_job for a typed search, without the local server."""
     sid = A.slug(query)
     jid = f"{sid}-{A.now_iso()[:16].replace(':', '').replace('-', '').replace('T', '-')}"
-    save(A.job_path(jid), {"id": jid, "search_id": sid, "kind": "text", "group": None, "query": query, "label": query, "status": "queued",
+    save(A.job_path(jid), {"id": jid, "search_id": sid, "kind": "text", "group": None, "query": query, "label": query, "status": "queued", "depth": DEPTH,
                            "progress": 3, "created": A.now_iso(), "message": "En cola", "browser_dir": f"app/jobs/{jid}/browser"})
     A.save_search({"id": sid, "kind": "text", "group": None, "query": query, "label": query, "listings": [], "pokemon": [],
                    "no_results": {}, "status": "searching", "job": jid})
