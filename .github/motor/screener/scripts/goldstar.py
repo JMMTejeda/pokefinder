@@ -82,7 +82,11 @@ def identify(title, site):
         if nums and not (c.get("priority") and PLAY_SIGN.search(t)): return None, "another card's number in the title (" + nums[0] + ")"
         named_star = (re.search(r"gold\s*star|goldstar|ゴールドスター|(?<![ァ-ヴー])スター(?![ァ-ヴー])|\bstar\b", t)
                       or any(re.search(re.escape(norm(x)) + r"\s*☆", t) for x in c["names"]))
-        if not (named_star or PLAY_SIGN.search(t) or any(norm(n) in t for n in c.get("numbers", []))):
+        # 「プレイ用☆」 is "for play" (worn), not the Play promo, and only the Play promos are named by PLAY (1 November 2026: Jauce
+        # brought movie promos of Registeel and Entei 「プレイ用☆」); a level 「Lv.47」 is a later Diamond & Pearl card
+        play = c.get("priority") and PLAY_SIGN.search(t.replace("プレイ用", " "))
+        if re.search(r"(?<![a-z])lv\.?\s*\d", t): return None, "a later card with a level (Lv.), not the Gold Star"
+        if not (named_star or play or any(norm(n) in t for n in c.get("numbers", []))):
             return None, "☆ only as decoration"
     jp_site = site in ("mercari", "rakuma", "magi", "cardrush", "snkrdunk", "buyee", "hareruya2", "paypay", "yshop", "rakuten", "mandarake", "yuyutei", "clabo", "jauce", "japantcg")
     if ENGLISH.search(t) and not re.search(r"日本語|japanese|japon", t): return None, "English card"
