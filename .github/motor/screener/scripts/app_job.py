@@ -200,14 +200,16 @@ def cmd_list():
 
 def cmd_ebay(jid):
     j = job(jid); put(j, status="ebay", progress=6, message="Buscando en eBay (API)…")
-    if not j.get("spec") and j.get("query"):   # the engine's reading of the search from the start, so eBay's first results are exact too
+    pre = A.preset_of(j.get("query"))   # a search with its own rules (app_lib.PRESETS)
+    if pre: put(j, spec=dict(pre["spec"]))
+    elif not j.get("spec") and j.get("query"):   # the engine's reading of the search from the start, so eBay's first results are exact too
         from motor import plan_spec
         put(j, spec=plan_spec(j["query"]))
     try:
         from ebay_api import token, search, row, MARKETS
         from concurrent.futures import ThreadPoolExecutor
         spec = spec_of(j)
-        qs = [spec["en"]] + ([spec["ja"]] if spec["ja"] else []) + list(spec.get("extra_q") or [])
+        qs = (pre["q_en"] + pre["q_ja"]) if pre else [spec["en"]] + ([spec["ja"]] if spec["ja"] else []) + list(spec.get("extra_q") or [])
         tok = token()
         with ThreadPoolExecutor(6) as ex:
             # eBay allows 5,000 searches a day, shared with the phone page's own searches (cloud/engine.js, same plan): one page of
@@ -239,6 +241,8 @@ def cmd_plan(jid):
     if j["kind"] == "group":
         put(j, status="running", progress=10, started=A.now_iso(), message="Buscando en todos los mercados…"); return
     spec = spec_of(j)
+    pre = A.preset_of(j.get("query"))   # a search with its own rules: its words, filters and the wordings typed on each site
+    if pre: spec = spec_of({**j, "spec": dict(pre["spec"])})
     if args("--en"): spec["en"] = args("--en")[0]
     if args("--ja"): spec["ja"] = args("--ja")[0]; spec.pop("alias", None); spec = spec_of({**j, "spec": spec})
     spec["must"] = list(dict.fromkeys(spec["must"] + args("--must"))); spec["not"] = list(dict.fromkeys(spec["not"] + args("--not")))
@@ -256,11 +260,13 @@ def cmd_plan(jid):
         pages.append({"site": "mandarake", "label": "Mandarake: entrada a la tienda", "card_key": None, "url": "https://order.mandarake.co.jp/order/",
                       "js": "(async()=>JSON.stringify({blocked:false,n:0,rows:[]}))()", "viewport": "tall"})
     q_en = (args("--q") or [spec["en"]])[0]   # what is typed on each site; the matching uses spec en/must/not
-    spec["q"] = q_en
+    if not pre: spec["q"] = q_en
     for site in sites:
         lang, tpl = SITES[site]
         q_ja = spec.get("qja") or spec["ja"]
-        for q in ([q_ja] if lang == "ja" and q_ja else []) + ([q_en] if lang == "en" or site in ("mercari", "magi") else []):
+        q_jas = pre["q_ja"] if pre else ([q_ja] if q_ja else [])
+        q_ens = pre["q_en"] if pre else [q_en]
+        for q in (q_jas if lang == "ja" else []) + (q_ens if lang == "en" or (site in ("mercari", "magi") and not pre) else []):
             url = tpl.format(q=quote(q).replace("%20", "+") if site in ("gempire", "rakuten") else quote(q))
             js = part("_prelude") + "\n" + part(site) + "\nconst KEEP=" + json.dumps(keep, ensure_ascii=False) + ",STAR=\"\";" + part("_tail")
             pages.append({"site": site, "label": f"{site}: {q}", "card_key": None, "url": url, "js": js,

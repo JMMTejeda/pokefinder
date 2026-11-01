@@ -201,3 +201,29 @@ def save_search(s):
     save(P("app", "index.json"), idx[:60])
 
 def now_iso(): return dt.datetime.now(NOW.tzinfo).isoformat(timespec="minutes")
+
+# Searches with their own rules (owner, 1 November 2026: "Pokémon Present Campaign: Suicune, Entei, Raikou, Ho-Oh, Lugia, in Japanese,
+# in a folder like the Gold Stars, full search"): the five shiny cosmos-holo promos of the 2010 「色違いポケモンプレゼント」 lottery,
+# 1,000 of each (pokumon.com/shiny-pokemon-present-campaign). Any search typed in the app or on the phone that says "present campaign"
+# uses them: one folder for the five cards, each searched by its number and as a shiny promo, in every market.
+PC_NAMES = {"Entei": ("エンテイ", "062"), "Suicune": ("スイクン", "063"), "Raikou": ("ライコウ", "064"), "Ho-Oh": ("ホウオウ", "065"), "Lugia": ("ルギア", "066")}
+PRESETS = [{
+    "match": r"present\s*campaign|プレゼントキャンペーン",
+    "spec": {"en": "pokemon", "ja": " ".join(v[0] for v in PC_NAMES.values()), "q": "Pokémon Present Campaign", "poke": list(PC_NAMES),
+             "alias": {"pokemon": [v[0] for v in PC_NAMES.values()], **{p.lower(): [v[0], p.replace("-", "")] for p, v in PC_NAMES.items()}},
+             # one of the five, and the campaign: its number (062/L-P to 066/L-P) or the campaign named. "色違い プロモ" alone is
+             # usually the shiny dogs given at cinemas in 2010 (059 to 061/L-P, a few euros), not these (hundreds of euros and up)
+             "must": [r"(?<![a-z])(?:entei|suicune|raikou|ho-?oh|lugia)(?![a-z])|エンテイ|スイクン|ライコウ|ホウオウ|ルギア",
+                      r"(?<!\d)0?6[2-6]\s*/\s*l\s*-?\s*p|色(?:ちがい|違い)の?ポケモンプレゼント|プレゼントキャンペーン|present\s*campaign|shiny\s*(?:pok[eé]mon\s*)?present"
+                      r"|抽選|lottery|1000\s*(?:名|枚|printed|copies)"],
+             # not the cinema promos, the English reprints (Call of Legends, SL numbers), the LEGEND halves, later ex / V cards,
+             # Shining Ho-Oh (2017), Shiny Treasure and other modern sets
+             "not": [r"映画|劇場|movie|cinema|theat|デジモン|digimon|メザスタ|mezastar|ナノブロック|プラモ|おもちゃ|玩具|フィギュア|figure|ぬいぐるみ|plush|"
+                     r"(?<!\d)0?(?:59|60|61)\s*/\s*l\s*-?\s*p|call\s*of\s*legends|コールオブレジェンド|\bcol\b|\bsl\s*\d|(?<![a-z])(?:ex|gx|v|vmax|vstar|legend)(?![a-z])|レジェンド|ひかる|shining|シャイニー|"
+                     r"(?<![a-z])(?:sv|sm|s)\d+[a-z]?(?![a-z])|\d{2,3}\s*/\s*(?:sv|sm|s|xy|bw|dp)-?p\b|\benglish\b|英語|pok[eé]mon\s*go"]},
+    "q_en": [f"{p} {v[1]}/L-P" for p, v in PC_NAMES.items()] + [f"shiny {p} promo japanese" for p in PC_NAMES],
+    "q_ja": [f"{v[0]} {v[1]}/L-P" for v in PC_NAMES.values()] + [f"{v[0]} 色違い プロモ" for v in PC_NAMES.values()],
+}]
+def preset_of(query):
+    """The search with its own rules that a typed search means, or None."""
+    return next((p for p in PRESETS if re.search(p["match"], query or "", re.I)), None)

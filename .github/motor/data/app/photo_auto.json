@@ -163,5 +163,20 @@
  },
  "jauce:jauq1245500341": {
   "verdict": "wrong"
+ },
+ "mercari:m83264910497": {
+  "verdict": "other"
+ },
+ "mercari:m97351496265": {
+  "verdict": "other"
+ },
+ "ebay:257812528747": {
+  "verdict": "other"
+ },
+ "ebay:377024011164": {
+  "verdict": "other"
+ },
+ "mercari:m26307930269": {
+  "verdict": "wrong"
  }
 }
