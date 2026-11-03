@@ -178,5 +178,11 @@
  },
  "mercari:m26307930269": {
   "verdict": "wrong"
+ },
+ "ebay:800871529079": {
+  "verdict": "wrong"
+ },
+ "mercari:m69232826368": {
+  "verdict": "wrong"
  }
 }

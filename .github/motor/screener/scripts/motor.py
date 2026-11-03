@@ -18,6 +18,7 @@ GitHub Actions runs this same engine for the searches typed on the phone page, c
   python motor.py run <job>    run one job now and stop
 Log: data/state/motor.log"""
 import glob, json, os, random, re, subprocess, sys, time, traceback, unicodedata
+import datetime as dt
 from common import P, load, save, CFG, SCREENER
 import app_lib as A
 
@@ -556,12 +557,41 @@ def group(jid):
     phone_results(list(A.GROUPS))
     put(jid, status="done", progress=100, finished=A.now_iso(), message="Búsqueda terminada")
 
+# sold listings (owner, 3 November 2026: "see which have sold since the last search, as a filter, in green"): a listing of the last
+# run that this run no longer finds is kept, marked sold, when its market was read this time (it has listings in this run) or the
+# listing page said it can no longer be bought; a market that could not be read (eBay's daily limit, a security check) proves nothing.
+# A listing that is gone may also have been withdrawn by its seller: the app says "sold or withdrawn". Kept 90 days.
+SOLD_DAYS = 90
+def mark_sold(sid, prev):
+    s = load(A.search_path(sid))
+    if not s or not prev: return 0
+    today = A.now_iso()[:10]
+    live = [l for l in s.get("listings", []) if not l.get("sold")]
+    ids, read = {l["id"] for l in live}, {l["site"] for l in live}
+    gone = set(load(P("app", "images", "gone.json"), []))
+    old = (dt.date.today() - dt.timedelta(days=SOLD_DAYS)).isoformat()
+    sold, n = [], 0
+    for l in prev:
+        if l["id"] in ids or l.get("site") == "cardmarket": continue   # still for sale; Cardmarket shows products, not listings
+        if l.get("sold"):
+            if (l.get("sold_at") or today) >= old: sold.append(l)
+        elif l["id"] in gone or l.get("site") in read:
+            sold.append({**l, "sold": True, "sold_at": today, "status": "Sold"}); n += 1
+    s["listings"] = live + sold
+    A.save_search(s)
+    log(f"  {sid}: {n} listings sold or withdrawn since the last run ({len(sold)} kept as sold)")
+    return n
+
 def run_job(jid):
     j = job(jid)
     if not j: return
     log(f"job {jid} [{j['kind']}] {j['label']}")
+    sids = list(A.GROUPS) if j["kind"] == "group" else [j["search_id"]]   # a collection run refreshes both collections
+    prev = {sid: (load(A.search_path(sid)) or {}).get("listings", []) for sid in sids}
     try:
         (group if j["kind"] == "group" else typed)(jid)
+        if not cancelled(jid) and (job(jid) or {}).get("status") == "done":
+            if sum(mark_sold(sid, prev[sid]) for sid in sids): phone_results(sids)
         log(f"job {jid} done")
     except Exception as e:
         log(f"job {jid} failed:", traceback.format_exc()[-800:])

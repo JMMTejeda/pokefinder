@@ -192,9 +192,10 @@ def save_search(s):
     s["updated"] = s.get("updated") or now_iso()
     s["created"] = s.get("created") or next((x.get("created") or x.get("updated") for x in old if x["id"] == s["id"]), None) or now_iso()
     save(search_path(s["id"]), s)
-    L = sorted((l for l in s.get("listings", []) if l.get("price_eur") is not None), key=lambda l: l["price_eur"])
+    L = sorted((l for l in s.get("listings", []) if l.get("price_eur") is not None and not l.get("sold")), key=lambda l: l["price_eur"])
     card = {k: s.get(k) for k in ("id", "kind", "label", "group", "query", "updated", "created", "status")} | {
-        "count": len(s.get("listings", [])), "min_eur": L[0]["price_eur"] if L else None,
+        "count": sum(not l.get("sold") for l in s.get("listings", [])), "min_eur": L[0]["price_eur"] if L else None,
+        "sold": sum(bool(l.get("sold")) for l in s.get("listings", [])),
         "thumbs": [l["image"] for l in L if l.get("image")][:4]}
     idx = [x for x in old if x["id"] != s["id"]] + [card]
     idx.sort(key=lambda x: (x.get("kind") != "group", -(dt.datetime.fromisoformat(x.get("created") or x.get("updated") or "2000-01-01T00:00").timestamp())))

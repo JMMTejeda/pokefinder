@@ -78,7 +78,7 @@ def compact(l, cell):
         "gr": l.get("grader"), "sa": l.get("sale"), "n": 1 if l.get("status") == "New" else None, "k": l.get("pokemon") or None,
         "a": l.get("auction_info"), "f": l.get("first_seen"), "x": cell,
         "e": l.get("edition"), "cd": l.get("card"), "gc": 1 if l.get("grade_checked") else None,
-        "pd": 1 if l.get("photo_doubt") else None, "pw": 1 if l.get("price_warn") else None, "cmt": l.get("price_text") if l.get("cardmarket") else None, "cml": l.get("cm_lang")}.items() if v not in (None, "", [])}
+        "sd": l.get("sold_at") if l.get("sold") else None, "pd": 1 if l.get("photo_doubt") else None, "pw": 1 if l.get("price_warn") else None, "cmt": l.get("price_text") if l.get("cardmarket") else None, "cml": l.get("cm_lang")}.items() if v not in (None, "", [])}
 
 def results_doc(sid):
     """One search's results as the page merges them (api/results/<search id>.json): the search and its listings in the page's short
@@ -87,9 +87,9 @@ def results_doc(sid):
     if not s: return None
     L = sorted(s.get("listings", []), key=lambda l: (l.get("price_eur") is None, l.get("price_eur") or 0))
     meta = {k: s.get(k) for k in ("id", "kind", "label", "group", "query", "updated", "created", "status")} | {
-        "pokemon": s.get("pokemon") or [], "no_results": s.get("no_results") or {}, "count": len(L), "cardmarket": s.get("cardmarket") or [],
-        "min_eur": next((l["price_eur"] for l in L if l.get("price_eur") is not None), None), "run_text": s.get("run_text"),
-        "thumbs": [l["image"] for l in L if l.get("image")][:4]}
+        "pokemon": s.get("pokemon") or [], "no_results": s.get("no_results") or {}, "count": sum(not l.get("sold") for l in L), "cardmarket": s.get("cardmarket") or [],
+        "min_eur": next((l["price_eur"] for l in L if l.get("price_eur") is not None and not l.get("sold")), None), "run_text": s.get("run_text"),
+        "thumbs": [l["image"] for l in L if l.get("image") and not l.get("sold")][:4]}
     return {"at": int(time.time() * 1000), "search": meta, "listings": [compact(l, l.get("image")) for l in L]}
 
 def push_results(sid):
@@ -126,7 +126,7 @@ def build():
         L = sorted(s.get("listings", []), key=lambda l: (l.get("price_eur") is None, l.get("price_eur") or 0))
         urls += [l["image"] for l in L if l.get("image")]
         data["searches"].append({k: s.get(k) for k in ("id", "kind", "label", "group", "query", "updated", "created", "status")} |
-                                {"pokemon": s.get("pokemon") or [], "no_results": s.get("no_results") or {}, "count": len(L), "cardmarket": s.get("cardmarket") or [],
+                                {"pokemon": s.get("pokemon") or [], "no_results": s.get("no_results") or {}, "count": sum(not l.get("sold") for l in L), "cardmarket": s.get("cardmarket") or [],
                                  "min_eur": card.get("min_eur"), "run_text": s.get("run_text")})
         data["listings"][s["id"]] = L
     todo = sorted({u for u in urls if not os.path.exists(thumb_path(u))})
