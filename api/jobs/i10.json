@@ -1,8 +1,8 @@
 {
  "label": "Masaki alakazam",
- "status": "running",
+ "status": "error",
  "progress": 15,
- "message": "Buscando en los mercados…",
+ "message": "No se pudo terminar la búsqueda (ModuleNotFoundError).",
  "search": "q-masaki-alakazam",
- "at": 1794070847358
+ "at": 1794070851184
 }
