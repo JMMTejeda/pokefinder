@@ -1,8 +1,8 @@
 {
  "label": "Masaki alakazam",
- "status": "queued",
- "progress": 3,
- "message": "En cola",
+ "status": "running",
+ "progress": 15,
+ "message": "Buscando en los mercados…",
  "search": "q-masaki-alakazam",
- "at": 1794070734003
+ "at": 1794070847358
 }
