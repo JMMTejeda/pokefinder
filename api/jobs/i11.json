@@ -1,8 +1,8 @@
 {
  "label": "Blaziken pop series 1",
- "status": "running",
+ "status": "error",
  "progress": 15,
- "message": "Buscando en los mercados…",
+ "message": "No se pudo terminar la búsqueda (ModuleNotFoundError).",
  "search": "q-blaziken-pop-series-1",
- "at": 1794070836358
+ "at": 1794070840123
 }
