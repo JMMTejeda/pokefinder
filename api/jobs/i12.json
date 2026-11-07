@@ -1,8 +1,8 @@
 {
  "label": "Gyarados Gold Star unlimited japanese",
- "status": "running",
+ "status": "error",
  "progress": 15,
- "message": "Buscando en los mercados…",
+ "message": "No se pudo terminar la búsqueda (ModuleNotFoundError).",
  "search": "q-gyarados-gold-star-unlimited-japanese",
- "at": 1794070767840
+ "at": 1794070771660
 }
