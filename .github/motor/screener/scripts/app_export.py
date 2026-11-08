@@ -27,8 +27,13 @@ PLAY_SIGN = re.compile(r"play|players|プレイヤーズ|\bpts\b|points|\bexp\b|
 STUFFED = re.compile(r"\bno\b[^,;|]{0,25}gold\s*star|\bnot\s+(?:a\s+)?gold\s*star", re.I)
 OTHER_CARD = re.compile(r"\bshining\b|\bneo\s*(?:\d|genesis|discovery|revelation|destiny|darkness)|\bvmax\b|\bvstar\b|\bprism\s*star", re.I)
 LOT = re.compile(r"gold\s*star\s*\+|\+[^+]*gold\s*star(?!.*\bno\b)", re.I)
+# a "quick" run (make_plan.py quick, the Play Promos refresh) only searches the Play promo cards: it must not rewrite Gold Stars with
+# the few rows it found by chance (Jesús, 8 November 2026: a Play Promos refresh left Gold Stars with 21 listings out of 1037)
+QUICK_RUN = (load(P("browser", "plan_mode.json")) or {}).get("mode") == "quick"
 for gid, g in GROUPS.items():
     old = load(P("app", "searches", f"{gid}.json"), {})
+    if QUICK_RUN and gid != "play_promos" and old.get("listings"):
+        print(f"{g['label']}: not searched on this quick run, kept {len(old['listings'])} listings"); continue
     rows = [r for r in L if r.get("list") == LIST[gid] and (gid != "play_promos" or PLAY_SIGN.search(r.get("title") or ""))
             and not ((STUFFED.search(r.get("title") or "") or OTHER_CARD.search(r.get("title") or "")) and not LOT.search(r.get("title") or ""))]
     rows.sort(key=lambda r: not r.get("site_name"))   # the same listing twice (a row kept from an earlier run): keep the complete one

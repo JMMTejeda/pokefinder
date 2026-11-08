@@ -167,6 +167,9 @@
  "ebay:820324799193": {
   "verdict": "other"
  },
+ "snkrdunk:snkr52522190": {
+  "verdict": "wrong"
+ },
  "jauce:jaun1249807385": {
   "verdict": "wrong"
  },
@@ -188,13 +191,7 @@
  "ebay:860112320497": {
   "verdict": "wrong"
  },
- "rakuma:4de33a8e43d497ffc98fb518a5e4a0a2": {
-  "verdict": "wrong"
- },
  "ebay:366768379817": {
-  "verdict": "wrong"
- },
- "snkrdunk:snkr52612750": {
   "verdict": "wrong"
  }
 }
