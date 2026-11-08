@@ -1,8 +1,8 @@
 {
  "label": "Gold Stars",
- "status": "running",
- "progress": 94,
- "message": "Comprobando que se pueden comprar (191 de 191)",
+ "status": "done",
+ "progress": 100,
+ "message": "Búsqueda terminada",
  "search": "gold_stars",
- "at": 1794163102164
+ "at": 1794163169062
 }
