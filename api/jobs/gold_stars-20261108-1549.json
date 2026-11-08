@@ -1,8 +1,8 @@
 {
  "label": "Gold Stars",
  "status": "running",
- "progress": 5,
- "message": "Preparando la búsqueda…",
+ "progress": 8,
+ "message": "Buscando en eBay (API)…",
  "search": "gold_stars",
- "at": 1794149380065
+ "at": 1794149562881
 }
