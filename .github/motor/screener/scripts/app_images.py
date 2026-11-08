@@ -56,6 +56,7 @@ def ebay_check(iid, tok):
                                  headers={"Authorization": "Bearer " + tok, "X-EBAY-C-MARKETPLACE-ID": "EBAY_ES",
                                           "X-EBAY-C-ENDUSERCTX": "contextualLocation=country%3DES"})
     try:
+        import ebay_cuota; ebay_cuota.registrar("imagenes")      # counted (not limited): it is part of the owner's searches
         d = json.load(urllib.request.urlopen(req, timeout=30))
     except urllib.error.HTTPError as e:
         return None, (("no", "404 en eBay") if e.code == 404 else ("unknown", f"eBay {e.code}")), None
@@ -86,7 +87,11 @@ def args(flag):
 def prepare():
     only = set(args("--search")); days = float((args("--days") or ["1"])[0]); every = "--all" in sys.argv
     cache, checks = load(CACHE, {}), load(CHECKS, {})
-    fresh = lambda k: not every and k in checks and (dt.datetime.now().timestamp() - checks[k]["at"]) < days * 86400
+    def fresh(k):
+        """¿Hace falta volver a preguntar a eBay por este anuncio? Lo que ya se vio «comprable» se vuelve a mirar a los 7 días, no cada día (Fernando, 7 nov: «no tiene sentido mirar otra vez lo ya hecho»:
+        eran 1.200 a 2.800 llamadas al día, casi todas anuncios ya comprobados); lo dudoso («unknown») se reintenta al día siguiente."""
+        if every or k not in checks: return False
+        ok = checks[k].get("buy") == "yes"; return (dt.datetime.now().timestamp() - checks[k]["at"]) < (max(days, 7) if ok else days) * 86400
     todo_ebay, queue, seen = {}, [], set()
     for f, s in searches(only):
         for l in s.get("listings", []):

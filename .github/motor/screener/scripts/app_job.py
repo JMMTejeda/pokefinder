@@ -30,7 +30,7 @@ SYN = {"stamped": r"stamp|stamped|estampad\w*|sello|sellad\w*|tampon\w*|gestempe
        "reverse": r"reverse|inverso|invers\w*|ミラー", "holo": r"holo\w*|ホロ|キラ", "japanese": r"japan\w*|jpn|japon\w*|日本",
        "english": r"english|eng\b|ingl[eé]s|英語", "1st": r"1st|first|1ed|1 ed|primera|初版", "first": r"1st|first|1ed|初版",
        # スター on its own, not inside マスター (Duel Masters), モンスター or ポケットモンスター
-       "gold": r"gold\s*star|goldstar|☆|(?<![ァ-ヴ])スター", "star": r"star|☆|(?<![ァ-ヴ])スター|estrella", "psa": r"psa", "promo": r"promo|プロモ"}
+       "gold": r"gold\s*star|goldstar|☆|(?<![ァ-ヴ])スター", "star": r"star|☆|(?<![ァ-ヴ])スター|estrella", "psa": r"psa", "promo": r"promo|プロモ", "shining": r"shining|シャイニング|ひかる|光る"}
 SITES = {
     "mercari":  ("ja", "https://jp.mercari.com/search?keyword={q}&status=on_sale&sort=created_time&order=desc"),
     "rakuma":   ("ja", "https://fril.jp/s?query={q}&order=desc&sort=created_at&transaction=selling"),

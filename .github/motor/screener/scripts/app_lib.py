@@ -6,8 +6,28 @@ App listing: {id, site, site_name, title, url, price_text, price_eur, sale ("buy
 ("New" | "Seen before"), first_seen, image, ships_to_spain, how_to_buy, note}
 Files: data/app/index.json (searches, newest first), data/app/searches/<id>.json (one search and its listings),
 data/app/jobs/<id>.json (a search waiting for, or being run by, Claude)."""
-import hashlib, json, os, re, unicodedata, datetime as dt
+import contextlib, hashlib, json, os, re, time, unicodedata, datetime as dt
 from common import P, load, save, to_eur, NOW, SCREENER
+
+@contextlib.contextmanager
+def index_lock(timeout=20):
+    """Only one process at a time reads, changes and writes data/app/index.json (server, engine and the eBay jobs all do). A lock file;
+    one left by a process that died (older than 30 s) is removed. After `timeout` it carries on without it rather than stop a search."""
+    lock = P("app", "index.lock"); os.makedirs(os.path.dirname(lock), exist_ok=True)
+    t0, got = time.time(), False
+    while not got:
+        try: os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)); got = True
+        except FileExistsError:
+            try:
+                if time.time() - os.path.getmtime(lock) > 30: os.remove(lock); continue
+            except OSError: pass
+            if time.time() - t0 > timeout: break
+            time.sleep(0.05)
+    try: yield
+    finally:
+        if got:
+            try: os.remove(lock)
+            except OSError: pass
 
 CARDS = load(os.path.join(SCREENER, "cards.json"))["cards"]
 GROUPS = {
@@ -197,9 +217,11 @@ def save_search(s):
         "count": sum(not l.get("sold") for l in s.get("listings", [])), "min_eur": L[0]["price_eur"] if L else None,
         "sold": sum(bool(l.get("sold")) for l in s.get("listings", [])),
         "thumbs": [l["image"] for l in L if l.get("image")][:4]}
-    idx = [x for x in old if x["id"] != s["id"]] + [card]
-    idx.sort(key=lambda x: (x.get("kind") != "group", -(dt.datetime.fromisoformat(x.get("created") or x.get("updated") or "2000-01-01T00:00").timestamp())))
-    save(P("app", "index.json"), idx[:60])
+    with index_lock():
+        old = load(P("app", "index.json"), [])   # read again inside the lock: another process may have added its card meanwhile
+        idx = [x for x in old if x["id"] != s["id"]] + [card]
+        idx.sort(key=lambda x: (x.get("kind") != "group", -(dt.datetime.fromisoformat(x.get("created") or x.get("updated") or "2000-01-01T00:00").timestamp())))
+        save(P("app", "index.json"), idx[:60])
 
 def now_iso(): return dt.datetime.now(NOW.tzinfo).isoformat(timespec="minutes")
 
@@ -225,6 +247,22 @@ PRESETS = [{
     "q_en": [f"{p} {v[1]}/L-P" for p, v in PC_NAMES.items()] + [f"shiny {p} promo japanese" for p in PC_NAMES],
     "q_ja": [f"{v[0]} {v[1]}/L-P" for v in PC_NAMES.values()] + [f"{v[0]} 色違い プロモ" for v in PC_NAMES.values()],
 }]
+
+# ---- Shining cards (owner, 2 November 2026: "Shining Mewtwo, Charizard, Noctowl, Magikarp... en inglés y en japonés, solo esos dos idiomas").
+# The ten WOTC-era Shinings: Neo Revelation (Gyarados, Magikarp) and Neo Destiny (Celebi, Charizard, Kabutops, Mewtwo, Noctowl, Raichu, Steelix, Tyranitar). Japanese: "ひかる" + the name.
+SHINING_JA = {"charizard": "リザードン", "mewtwo": "ミュウツー", "magikarp": "コイキング", "noctowl": "ヨルノズク", "gyarados": "ギャラドス",
+              "celebi": "セレビィ", "kabutops": "カブトプス", "raichu": "ライチュウ", "steelix": "ハガネール", "tyranitar": "バンギラス"}
+# not the modern «Shining» sets or shiny cards, not merchandise, not another language (German, French, Italian, Spanish, Korean, Chinese)
+SHINING_NOT = (r"shining\s*(?:legends|fates|star)|shiny|色違い|シャイニー|シャイニートレジャー|brilliant|(?<![a-z])(?:gx|vmax|vstar|v-union|ex)(?![a-z])|レジェンド|pok[eé]mon\s*go|celebrations|"
+               r"classic\s*collection|復刻|reprint|proxy|custom|orica|オリカ|metal\s*card|sticker|シール|フィギュア|figure|ぬいぐるみ|plush|"
+               r"gl[aä]nz\w*|schimmer\w*|rayonn\w*|splendente|luminos\w*|reluciente|deutsch|german|fran[cç]ais|french|italian\w*|spanish|espa[ñn]ol|korean|한국|chinese|中文|繁體|简体")
+def shining_preset(query):
+    q = query or ""
+    found = next((k for k, ja in SHINING_JA.items() if re.search(rf"shining\s+{k}\b|\b{k}\s+shining\b|ひかる{ja}", q, re.I)), None)
+    if not found: return None
+    ja, name = SHINING_JA[found], found.title()
+    return {"spec": {"en": f"shining {found}", "ja": ja, "q": f"Shining {name}", "poke": [name], "alias": {"shining": ["ひかる", "シャイニング"], found: [ja]}, "must": [], "not": [SHINING_NOT]},
+            "q_en": [f"shining {found}", f"shining {found} neo"], "q_ja": [f"ひかる{ja}", f"{ja} ひかる"]}
 def preset_of(query):
     """The search with its own rules that a typed search means, or None."""
-    return next((p for p in PRESETS if re.search(p["match"], query or "", re.I)), None)
+    return next((p for p in PRESETS if re.search(p["match"], query or "", re.I)), None) or shining_preset(query)

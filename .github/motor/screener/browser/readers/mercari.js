@@ -7,4 +7,7 @@ const img=li.querySelector('img[alt]'),alt=img?img.alt.replace(/のサムネイ�
 const pm=t.match(/([¥€])\s?([\d.,]+)/)||clean((li.querySelector('[data-testid="item-tile-price"]')||{}).textContent).match(/([¥€])\s?([\d.,]+)/);
 const title=alt||t.replace(/^[¥€]\s?[\d.,]+/,'');
 add(a.href.split('/').pop().split('?')[0],a.href.split('?')[0],title,pm?pm[1]+pm[2]:'',(/^SOLD/.test(t)||SOLDRE.test(li.innerHTML)||/sold/i.test((li.querySelector('[data-testid="thumbnail-sticker"]')||{}).textContent||''))?'sold':'on sale',/…$/.test(alt)?'title cut on the search page':'')}};
-if(/mercari/.test(H)){for(let i=0;i<15;i++){mscan();const before=scrollY;window.scrollBy(0,3500);await new Promise(r=>setTimeout(r,700));if(scrollY===before)break}mscan();window.scrollTo(0,0)}
+if(/mercari/.test(H)){for(let i=0;i<15;i++){mscan();const before=scrollY;window.scrollBy(0,3500);await new Promise(r=>setTimeout(r,700));if(scrollY===before)break}mscan();window.scrollTo(0,0)
+// a cell scrolled away is emptied, and looking for its picture higher up found ANOTHER listing's (2 November 2026: 15 of 18 Shining Mewtwo
+// with one Eevee photo); a Mercari item's own picture has a fixed address made from its id
+for(const r of rows)if(/^m\d{6,}$/.test(r.id)&&!r.image)r.image='https://static.mercdn.net/thumb/item/webp/'+r.id+'_1.jpg'}

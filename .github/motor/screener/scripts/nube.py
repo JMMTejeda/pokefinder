@@ -123,6 +123,7 @@ def build():
     for card in idx:
         s = load(A.search_path(card["id"]))
         if not s: continue
+        if s.get("import_source"): continue     # búsquedas importadas de la otra persona (repo privado): nunca en la página pública
         L = sorted(s.get("listings", []), key=lambda l: (l.get("price_eur") is None, l.get("price_eur") or 0))
         urls += [l["image"] for l in L if l.get("image")]
         data["searches"].append({k: s.get(k) for k in ("id", "kind", "label", "group", "query", "updated", "created", "status")} |

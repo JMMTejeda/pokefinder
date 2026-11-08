@@ -180,7 +180,7 @@ def names():
 WORDS_JA = {"masaki": "マサキ", "promo": "プロモ", "holo": "ホロ", "shiny": "色違い", "delta": "δ", "trainer": "トレーナー",
             "stamp": "スタンプ", "stamped": "スタンプ", "japanese": "", "japan": "", "card": "", "pokemon": "", "pokémon": "",
             "gold": "☆", "star": "", "goldstar": "☆", "1st": "1ED", "first": "1ED", "edition": "", "ed": "", "psa": "PSA",
-            "play": "PLAY", "unlimited": "", "lot": "", "rare": ""}
+            "play": "PLAY", "unlimited": "", "lot": "", "rare": "", "shining": "ひかる"}
 
 # words that are not part of the card (owner, 28 October 2026: "entei gold star en idioma español" found nothing because every title
 # had to contain "en", "idioma" and "español")
@@ -498,7 +498,7 @@ def buyable(jid, searches, lo, hi):
 # ---------------------------------------------------------------- the two kinds of job
 def typed(jid):
     j = job(jid); bdir = j["browser_dir"]
-    if HAS_KEYS and not os.path.exists(os.path.join(P(), bdir, "pages", "000.json")):
+    if HAS_KEYS and not j.get("sin_ebay") and not os.path.exists(os.path.join(P(), bdir, "pages", "000.json")):      # (sin_ebay: la caza busca solo en los demás mercados cuando el reparto de eBay del día va adelantado)
         put(jid, status="ebay", progress=6, message="Buscando en eBay (API)…")
         run(["app_job.py", "ebay", jid], check=False)
     spec = exact_card(plan_spec(j["query"]))
@@ -562,12 +562,16 @@ def group(jid):
 # listing page said it can no longer be bought; a market that could not be read (eBay's daily limit, a security check) proves nothing.
 # A listing that is gone may also have been withdrawn by its seller: the app says "sold or withdrawn". Kept 90 days.
 SOLD_DAYS = 90
-def mark_sold(sid, prev):
+def mark_sold(sid, prev, sin_ebay=False):
     s = load(A.search_path(sid))
     if not s or not prev: return 0
     today = A.now_iso()[:10]
     live = [l for l in s.get("listings", []) if not l.get("sold")]
     ids, read = {l["id"] for l in live}, {l["site"] for l in live}
+    if sin_ebay:      # caza sin eBay: eBay no se ha consultado, así que sus anuncios anteriores se conservan tal cual (ni vendidos ni quitados)
+        read.discard("ebay")
+        live += [l for l in prev if l.get("site") == "ebay" and not l.get("sold") and l["id"] not in ids]
+        ids = {l["id"] for l in live}
     gone = set(load(P("app", "images", "gone.json"), []))
     old = (dt.date.today() - dt.timedelta(days=SOLD_DAYS)).isoformat()
     sold, n = [], 0
@@ -591,7 +595,7 @@ def run_job(jid):
     try:
         (group if j["kind"] == "group" else typed)(jid)
         if not cancelled(jid) and (job(jid) or {}).get("status") == "done":
-            if sum(mark_sold(sid, prev[sid]) for sid in sids): phone_results(sids)
+            if sum(mark_sold(sid, prev[sid], bool(j.get("sin_ebay"))) for sid in sids): phone_results(sids)
         log(f"job {jid} done")
     except Exception as e:
         log(f"job {jid} failed:", traceback.format_exc()[-800:])

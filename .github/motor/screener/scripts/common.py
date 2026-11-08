@@ -17,13 +17,30 @@ def P(*a):
     return os.path.join(DATA, *a)
 
 def load(path, default=None):
-    if not os.path.exists(path): return default
-    d = json.load(open(path, encoding="utf-8"))
+    import time
+    for n in range(40):   # Windows refuses to open a file for the instant another process is swapping a new one in (see save)
+        try:
+            if not os.path.exists(path): return default
+            with open(path, encoding="utf-8") as f: d = json.load(f)
+            break
+        except PermissionError:
+            if n == 39: raise
+            time.sleep(0.05 if n < 10 else 0.4)
     return json.loads(d) if isinstance(d, str) else d
 
 def save(path, obj):
+    """Atomic: written to a temporary file beside it and then swapped in, so the server, the engine and the eBay jobs (all writing at
+    once when a folder starts 22 searches) never leave, or read, a half-written file. data/app/index.json was corrupted that way
+    on 1 November 2026 by a plain open(path, "w")."""
+    import threading, time
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    json.dump(obj, open(path, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+    tmp = f"{path}.{os.getpid()}.{threading.get_ident()}.tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(obj, f, indent=1, ensure_ascii=False); f.flush(); os.fsync(f.fileno())
+    for n in range(40):
+        try: os.replace(tmp, path); return
+        except PermissionError: time.sleep(0.05 if n < 10 else 0.4)   # Windows: a reader has the file open for a moment
+    os.replace(tmp, path)
 
 def eur(text):
     """First euro amount in a Spanish-format text: '2 099,00 EUR' -> 2099.0. None if there is none."""

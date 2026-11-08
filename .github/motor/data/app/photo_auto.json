@@ -164,25 +164,37 @@
  "jauce:jauq1245500341": {
   "verdict": "wrong"
  },
- "mercari:m83264910497": {
+ "ebay:820324799193": {
   "verdict": "other"
  },
- "mercari:m97351496265": {
-  "verdict": "other"
+ "jauce:jaun1249807385": {
+  "verdict": "wrong"
  },
- "ebay:257812528747": {
-  "verdict": "other"
- },
- "ebay:377024011164": {
-  "verdict": "other"
- },
- "mercari:m26307930269": {
+ "jauce:jauw1251280126": {
   "verdict": "wrong"
  },
  "ebay:800871529079": {
   "verdict": "wrong"
  },
  "mercari:m69232826368": {
+  "verdict": "wrong"
+ },
+ "ebay:960163151222": {
+  "verdict": "wrong"
+ },
+ "ebay:860118377117": {
+  "verdict": "wrong"
+ },
+ "ebay:860112320497": {
+  "verdict": "wrong"
+ },
+ "rakuma:4de33a8e43d497ffc98fb518a5e4a0a2": {
+  "verdict": "wrong"
+ },
+ "ebay:366768379817": {
+  "verdict": "wrong"
+ },
+ "snkrdunk:snkr52612750": {
   "verdict": "wrong"
  }
 }

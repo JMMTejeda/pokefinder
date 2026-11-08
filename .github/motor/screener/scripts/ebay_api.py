@@ -33,14 +33,18 @@ def token():
     save(P("state", "ebay_token.json"), {"access_token": d["access_token"], "until": time.time() + int(d["expires_in"])})
     return d["access_token"]
 
-def search(q, market, tok, max_items=1000):
-    """Every listing eBay returns for q on one eBay site (200 per call), seen from Spain (shipping costs to Spain)."""
+def search(q, market, tok, max_items=1000, origen="manual"):
+    """Every listing eBay returns for q on one eBay site (200 per call), seen from Spain (shipping costs to Spain).
+    origen: what asked for it ("manual" = the owner's searches, "foto" = the daily snapshot); every call is counted in ebay_cuota.py and an automatic origin stops at the reserve."""
+    import ebay_cuota as Q
     out, offset = [], 0
     while offset < max_items:
         url = API + urllib.parse.urlencode({"q": q, "limit": 200, "offset": offset})
         req = urllib.request.Request(url, headers={"Authorization": "Bearer " + tok, "X-EBAY-C-MARKETPLACE-ID": market,
                                                    "X-EBAY-C-ENDUSERCTX": "contextualLocation=country%3DES"})
         for attempt in range(3):
+            if not Q.permitido(origen): return out, f"Presupuesto automático del día agotado ({origen}): quedan reservadas {Q.RESERVA_MANUAL} llamadas para tus búsquedas"
+            Q.registrar(origen)
             try:
                 d = json.load(urllib.request.urlopen(req, timeout=40)); break
             except urllib.error.HTTPError as e:
