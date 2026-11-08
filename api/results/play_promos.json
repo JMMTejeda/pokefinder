@@ -1,12 +1,12 @@
 {
- "at": 1794157501806,
+ "at": 1794163162157,
  "search": {
   "id": "play_promos",
   "kind": "group",
   "label": "Play Promos",
   "group": "play_promos",
   "query": null,
-  "updated": "2026-11-08T18:03+01:00",
+  "updated": "2026-11-08T19:18+01:00",
   "created": "2026-10-24T19:35+02:00",
   "status": "done",
   "pokemon": [
@@ -24,7 +24,6 @@
     "GempireCards (eBay worldwide and auction houses)",
     "Card Rush (Japan)",
     "Yahoo! Auctions Japan (read through Buyee)",
-    "Magi (Japan)",
     "Hareruya2 (Japan, card shop)",
     "PayPay Flea Market (Japan, read through Buyee)",
     "Yahoo! Shopping Japan (small shops, read through Buyee)",
@@ -35,12 +34,12 @@
   "count": 24,
   "cardmarket": [],
   "min_eur": 2743.68,
-  "run_text": "Sunday 8 November 2026 at 18:03 Madrid time",
+  "run_text": "Sunday 8 November 2026 at 19:18 Madrid time",
   "thumbs": [
    "https://cdn.snkrdunk.com/apparel_used_listings/52975db6-91fa-4491-92cd-6d4f426b4ed4/5525616.jpeg?size=l",
    "https://i.ebayimg.com/images/g/BIYAAeSwKzZqWyNf/s-l1600.jpg",
    "https://i.ebayimg.com/images/g/1dgAAeSwZe9q4Xrc/s-l1600.jpg",
-   "https://cdn.snkrdunk.com/apparel_used_listings/9d3fe7ee-e865-46c0-9626-9bf336ba9ff7/6580736.jpeg?size=m"
+   "https://i.ebayimg.com/images/g/xAoAAeSwffVqzptG/s-l1600.jpg"
   ]
  },
  "listings": [
@@ -61,28 +60,6 @@
    "f": "2026-10-28T11:35+01:00",
    "x": "https://cdn.snkrdunk.com/apparel_used_listings/52975db6-91fa-4491-92cd-6d4f426b4ed4/5525616.jpeg?size=l",
    "cd": "Vaporeon ☆"
-  },
-  {
-   "i": "ebay:287671585485",
-   "t": "Pokemon Jolteon Gold Star Play 3rd Season Japanese Holo Promo 023/PLAY BGS 9",
-   "u": "https://www.ebay.es/itm/287671585485",
-   "p": 4256.27,
-   "o": "USD 4,750.00",
-   "s": "eBay",
-   "r": "AM",
-   "c": "US",
-   "g": "BGS 9",
-   "gr": "BGS",
-   "sa": "auction",
-   "k": [
-    "Jolteon"
-   ],
-   "a": "44 bids; 7h 45m 27s",
-   "f": "2026-10-28T11:35+01:00",
-   "x": "https://i.ebayimg.com/images/g/zAsAAeSw8M1q24cR/s-l1600.jpg",
-   "cd": "Jolteon ☆",
-   "gc": 1,
-   "sd": "2026-11-08"
   },
   {
    "i": "ebay:127424779340",
@@ -122,28 +99,6 @@
    "gc": 1
   },
   {
-   "i": "ebay:206660168420",
-   "t": "Nintendo Pokemon TCG Vaporeon gold star Japanese Play Promo Holo 022/PLAY PSA 9",
-   "u": "https://www.ebay.es/itm/206660168420",
-   "p": 5824.37,
-   "o": "USD 6,500.00",
-   "s": "eBay",
-   "r": "AM",
-   "c": "US",
-   "g": "PSA 9",
-   "gr": "PSA",
-   "sa": "buy",
-   "k": [
-    "Vaporeon"
-   ],
-   "f": "2026-11-01T17:38+01:00",
-   "x": "https://i.ebayimg.com/images/g/S50AAeSwAeRq4lTj/s-l1600.jpg",
-   "e": "Unlimited",
-   "cd": "Vaporeon ☆",
-   "gc": 1,
-   "sd": "2026-11-08"
-  },
-  {
    "i": "cardmarket:765690",
    "t": "Vaporeon Gold Star",
    "u": "https://www.cardmarket.com/es/Pokemon/Products/Search?searchString=Vaporeon%20Gold%20Star",
@@ -157,7 +112,7 @@
     "Vaporeon"
    ],
    "f": "2026-11-07",
-   "x": "https://cdn.snkrdunk.com/apparel_used_listings/9d3fe7ee-e865-46c0-9626-9bf336ba9ff7/6580736.jpeg?size=m",
+   "x": "https://i.ebayimg.com/images/g/xAoAAeSwffVqzptG/s-l1600.jpg",
    "cd": "Vaporeon ☆",
    "gc": 1,
    "cmt": "desde 6.000,00 € · tendencia 990,00 €"
@@ -181,27 +136,6 @@
    "cd": "Jolteon ☆",
    "gc": 1,
    "cmt": "desde 6.000,00 € · tendencia 899,00 €"
-  },
-  {
-   "i": "gempire:fanatics_auction-house:fanatics:WA250 Lot: 18498",
-   "t": "2005 Pokemon Japanese Play Promo 20,000 Points Holo Jolteon Gold Star #23 CGC 10 PRISTINE",
-   "u": "https://www.fanaticscollect.com/weekly/307324da-c8bf-11f1-ab02-0a58a9feac02/2005-pokemon-japanese-play-promo-20000-points-holo-jolteon-gold-star-23-cgc-10-pristine",
-   "p": 8950.95,
-   "o": "$10,000",
-   "s": "Fanatics Collect (via Gempire)",
-   "r": "AM",
-   "c": "US",
-   "g": "CGC 10",
-   "gr": "CGC",
-   "sa": "auction",
-   "k": [
-    "Jolteon"
-   ],
-   "a": "26 bids; 9h 10m 27s",
-   "f": "2026-10-28T11:35+01:00",
-   "x": "https://dilxwvfkfup17.cloudfront.net/eyJ0YWciOiIiLCJ2YWx1ZSI6IngyNWRQRDR6WTRsYk1KZG1jVHZpd1hlbGlLUFVpa1gzeEtFNGc5VUxMcEt3ZE9xSmlhQWZBc3pKaVZqSG16QjhtdzhmQy9PM0dreWw5blcrampYN1lnPT0iLCJtYWMiOiI2MDYzNTA2MGY0ZDk3NDNhYjI1Yzc0YTY4MDAxNjA4NjE1NjFmZDIwYjQ4ODhmNzRlMGMxYzlhOWIwNTA1YTE5IiwiaXYiOiI5dkEyQy9yTUhOajZtOHlLYXlGRzd3PT0ifQ==",
-   "cd": "Jolteon ☆",
-   "sd": "2026-11-08"
   },
   {
    "i": "ebay:257738357076",
@@ -242,7 +176,7 @@
    ],
    "a": "9 bids; 7d 10h",
    "f": "2026-11-08T18:02+01:00",
-   "x": "https://dilxwvfkfup17.cloudfront.net/eyJ0YWciOiIiLCJ2YWx1ZSI6Im9ONVJoRndzOUxWcUEzL2srdEc4Zmd5WlB0eWFZS09RamsyRjMwSTJ0L3BWOGE0bXJEN25UajRSS0E5eFNBck1aVW1pbkFLL09OSE9wczZrQnFLSGtBPT0iLCJtYWMiOiJhOGJlYTBjMDA5NjBlYjUxYzNhODc0NzA5MjlhODZmZjA1YzU5MWJlNTgxYWE3OWZiNDdkMjZiN2VkZTBmMjVhIiwiaXYiOiJqWEdZLys0RE1kN2VPM05NT3FiV1JBPT0ifQ==",
+   "x": "https://dilxwvfkfup17.cloudfront.net/eyJ0YWciOiIiLCJ2YWx1ZSI6IjIwSEc4RnZWS0t2U3VzZFpTR21YOXN0d0pPbEQ0WWErYmhURndzbXIrSmU2YmZ4L0ZacFBPYlZTb3B6Z1pSSGM3STZTeXl5cnh6aFdBWHVFOURGcmZnPT0iLCJtYWMiOiI3ZTAzMDMwNzdjZDgyY2FlY2RiYzIwZTExY2YxOGJmMjk5MGRlY2Y2OWNjY2U5MzI0NzczYmQ5ZDhjZjlhMTM5IiwiaXYiOiJHNUpEQlp3aWQzNkRNOHU3cG4yWEpBPT0ifQ==",
    "e": "Unlimited",
    "cd": "Flareon ☆",
    "gc": 1
@@ -306,7 +240,7 @@
     "Vaporeon"
    ],
    "f": "2026-11-08T18:02+01:00",
-   "x": "https://cdn.snkrdunk.com/apparel_used_listings/9d3fe7ee-e865-46c0-9626-9bf336ba9ff7/6580736.jpeg?size=m",
+   "x": "https://cdn.snkrdunk.com/apparel_used_listings/9d3fe7ee-e865-46c0-9626-9bf336ba9ff7/6580736.jpeg?size=l",
    "cd": "Vaporeon ☆"
   },
   {
@@ -329,26 +263,6 @@
    "e": "Unlimited",
    "cd": "Vaporeon ☆",
    "gc": 1
-  },
-  {
-   "i": "snkrdunk:snkr52302055",
-   "t": "シャワーズ☆: プロモ[PCG-P 022/PLAY](プロモーションカード「プレイヤーズけいけんち 10000~19990EXPプレゼントカード」) [PSA10]",
-   "u": "https://snkrdunk.com/apparels/93230/used/52302055",
-   "p": 36999.09,
-   "o": "¥6,500,000",
-   "s": "SNKRDUNK",
-   "r": "JP",
-   "c": "JP",
-   "g": "PSA 10",
-   "gr": "PSA",
-   "sa": "buy",
-   "k": [
-    "Vaporeon"
-   ],
-   "f": "2026-11-01T18:56+01:00",
-   "x": "https://cdn.snkrdunk.com/apparel_used_listings/d7e56663-acae-4011-b68b-3126de597178/6580736.jpeg?size=l",
-   "cd": "Vaporeon ☆",
-   "sd": "2026-11-08"
   },
   {
    "i": "ebay:920052801708",
@@ -510,7 +424,7 @@
    ],
    "a": "18 bids; 4d 9h",
    "f": "2026-11-08T18:02+01:00",
-   "x": "https://auction-house-radar.sam-stone838.workers.dev/image?src=https%3A%2F%2Fonlyalt-images.s3.us-east-2.amazonaws.com%2Fimage%2Fpublic%2F93dbaabd-85a5-4b64-826b-6fa7472a6024_1793816184356_1793816759408_front.png&w=520&q=82",
+   "x": "https://onlyalt.imgix.net/93dbaabd-85a5-4b64-826b-6fa7472a6024_1793816184356_1793816759408_front.png?fit=max&fm=jpg&q=80&w=1200",
    "e": "Unlimited",
    "cd": "Espeon ☆",
    "gc": 1
@@ -533,7 +447,7 @@
    ],
    "a": "9 bids; 28d 10h",
    "f": "2026-11-08T18:02+01:00",
-   "x": "https://d2tt46f3mh26nl.cloudfront.net/public/Lots/202611-0315-5546-a7ff135d-61db-4cbd-9d0a-aed1041514ae/74848118front__b25cced5-6bb6-4ada-b76d-db05b5c43401@1x",
+   "x": "https://d2tt46f3mh26nl.cloudfront.net/74848118front__b25cced5-6bb6-4ada-b76d-db05b5c43401@1x",
    "e": "Unlimited",
    "cd": "Espeon ☆",
    "gc": 1
@@ -552,7 +466,7 @@
     "Flareon"
    ],
    "f": "2026-11-07",
-   "x": "https://dilxwvfkfup17.cloudfront.net/eyJ0YWciOiIiLCJ2YWx1ZSI6Im9ONVJoRndzOUxWcUEzL2srdEc4Zmd5WlB0eWFZS09RamsyRjMwSTJ0L3BWOGE0bXJEN25UajRSS0E5eFNBck1aVW1pbkFLL09OSE9wczZrQnFLSGtBPT0iLCJtYWMiOiJhOGJlYTBjMDA5NjBlYjUxYzNhODc0NzA5MjlhODZmZjA1YzU5MWJlNTgxYWE3OWZiNDdkMjZiN2VkZTBmMjVhIiwiaXYiOiJqWEdZLys0RE1kN2VPM05NT3FiV1JBPT0ifQ==",
+   "x": "https://i.ebayimg.com/images/g/6xkAAeSw6N9qsPar/s-l1600.jpg",
    "e": "Unlimited",
    "cd": "Flareon ☆",
    "gc": 1,
@@ -618,7 +532,7 @@
    ],
    "a": "27 bids; 4d 9h",
    "f": "2026-11-08T18:02+01:00",
-   "x": "https://auction-house-radar.sam-stone838.workers.dev/image?src=https%3A%2F%2Fonlyalt-images.s3.us-east-2.amazonaws.com%2Fimage%2Fpublic%2F2a6004b7-c235-42f8-acae-46cb6c2732f4_1791983892004_1792004052139_front.png&w=520&q=82",
+   "x": "https://onlyalt.imgix.net/2a6004b7-c235-42f8-acae-46cb6c2732f4_1791983892004_1792004052139_front.png?fit=max&fm=jpg&q=80&w=1200",
    "e": "Unlimited",
    "cd": "Espeon ☆",
    "gc": 1
