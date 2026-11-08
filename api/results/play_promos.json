@@ -1,12 +1,12 @@
 {
- "at": 1794154697808,
+ "at": 1794157490992,
  "search": {
   "id": "play_promos",
   "kind": "group",
   "label": "Play Promos",
   "group": "play_promos",
   "query": null,
-  "updated": "2026-11-08T17:02+01:00",
+  "updated": "2026-11-08T18:03+01:00",
   "created": "2026-10-24T19:35+02:00",
   "status": "done",
   "pokemon": [
@@ -17,28 +17,30 @@
    "Umbreon"
   ],
   "no_results": {
-   "cards": [],
+   "cards": [
+    "Umbreon ☆"
+   ],
    "sites": [
     "GempireCards (eBay worldwide and auction houses)",
     "Card Rush (Japan)",
     "Yahoo! Auctions Japan (read through Buyee)",
+    "Magi (Japan)",
     "Hareruya2 (Japan, card shop)",
     "PayPay Flea Market (Japan, read through Buyee)",
     "Yahoo! Shopping Japan (small shops, read through Buyee)",
     "Rakuten Ichiba (Japan, card shops)",
-    "Wallapop (Spain)",
-    "Vinted (Spain)"
+    "Wallapop (Spain)"
    ]
   },
-  "count": 25,
+  "count": 24,
   "cardmarket": [],
-  "min_eur": 2760.7,
-  "run_text": "Sunday 8 November 2026 at 17:01 Madrid time",
+  "min_eur": 2743.68,
+  "run_text": "Sunday 8 November 2026 at 18:03 Madrid time",
   "thumbs": [
    "https://cdn.snkrdunk.com/apparel_used_listings/52975db6-91fa-4491-92cd-6d4f426b4ed4/5525616.jpeg?size=l",
-   "https://i.ebayimg.com/images/g/zAsAAeSw8M1q24cR/s-l1600.jpg",
    "https://i.ebayimg.com/images/g/BIYAAeSwKzZqWyNf/s-l1600.jpg",
-   "https://i.ebayimg.com/images/g/1dgAAeSwZe9q4Xrc/s-l1600.jpg"
+   "https://i.ebayimg.com/images/g/1dgAAeSwZe9q4Xrc/s-l1600.jpg",
+   "https://cdn.snkrdunk.com/apparel_used_listings/9d3fe7ee-e865-46c0-9626-9bf336ba9ff7/6580736.jpeg?size=m"
   ]
  },
  "listings": [
@@ -46,7 +48,7 @@
    "i": "snkrdunk:snkr52037887",
    "t": "シャワーズ☆: プロモ[PCG-P 022/PLAY](プロモーションカード「プレイヤーズけいけんち 10000~19990EXPプレゼントカード」) [C]",
    "u": "https://snkrdunk.com/apparels/93230/used/52037887",
-   "p": 2760.7,
+   "p": 2743.68,
    "o": "¥485,000",
    "s": "SNKRDUNK",
    "r": "JP",
@@ -59,27 +61,6 @@
    "f": "2026-10-28T11:35+01:00",
    "x": "https://cdn.snkrdunk.com/apparel_used_listings/52975db6-91fa-4491-92cd-6d4f426b4ed4/5525616.jpeg?size=l",
    "cd": "Vaporeon ☆"
-  },
-  {
-   "i": "ebay:287671585485",
-   "t": "Pokemon Jolteon Gold Star Play 3rd Season Japanese Holo Promo 023/PLAY BGS 9",
-   "u": "https://www.ebay.es/itm/287671585485",
-   "p": 4256.27,
-   "o": "USD 4,750.00",
-   "s": "eBay",
-   "r": "AM",
-   "c": "US",
-   "g": "BGS 9",
-   "gr": "BGS",
-   "sa": "auction",
-   "k": [
-    "Jolteon"
-   ],
-   "a": "44 bids; 7h 45m 27s",
-   "f": "2026-10-28T11:35+01:00",
-   "x": "https://i.ebayimg.com/images/g/zAsAAeSw8M1q24cR/s-l1600.jpg",
-   "cd": "Jolteon ☆",
-   "gc": 1
   },
   {
    "i": "ebay:127424779340",
@@ -119,27 +100,6 @@
    "gc": 1
   },
   {
-   "i": "ebay:206660168420",
-   "t": "Nintendo Pokemon TCG Vaporeon gold star Japanese Play Promo Holo 022/PLAY PSA 9",
-   "u": "https://www.ebay.es/itm/206660168420",
-   "p": 5824.37,
-   "o": "USD 6,500.00",
-   "s": "eBay",
-   "r": "AM",
-   "c": "US",
-   "g": "PSA 9",
-   "gr": "PSA",
-   "sa": "buy",
-   "k": [
-    "Vaporeon"
-   ],
-   "f": "2026-11-01T17:38+01:00",
-   "x": "https://i.ebayimg.com/images/g/S50AAeSwAeRq4lTj/s-l1600.jpg",
-   "e": "Unlimited",
-   "cd": "Vaporeon ☆",
-   "gc": 1
-  },
-  {
    "i": "cardmarket:765690",
    "t": "Vaporeon Gold Star",
    "u": "https://www.cardmarket.com/es/Pokemon/Products/Search?searchString=Vaporeon%20Gold%20Star",
@@ -153,7 +113,7 @@
     "Vaporeon"
    ],
    "f": "2026-11-07",
-   "x": "https://i.ebayimg.com/images/g/xAoAAeSwffVqzptG/s-l1600.jpg",
+   "x": "https://cdn.snkrdunk.com/apparel_used_listings/9d3fe7ee-e865-46c0-9626-9bf336ba9ff7/6580736.jpeg?size=m",
    "cd": "Vaporeon ☆",
    "gc": 1,
    "cmt": "desde 6.000,00 € · tendencia 990,00 €"
@@ -179,62 +139,6 @@
    "cmt": "desde 6.000,00 € · tendencia 899,00 €"
   },
   {
-   "i": "rakuma:fff8f5ca438402d231c9526cf51897c6",
-   "t": "ポケモンカード ポケカ シャワーズ プレイヤーズクラブ プロモ PROMO 022/PLAY 未開封",
-   "u": "https://item.fril.jp/fff8f5ca438402d231c9526cf51897c6",
-   "p": 6261.38,
-   "o": "¥1,100,000",
-   "s": "Rakuma",
-   "r": "JP",
-   "c": "JP",
-   "sa": "buy",
-   "n": 1,
-   "k": [
-    "Vaporeon"
-   ],
-   "f": "2026-11-01T18:56+01:00",
-   "x": "https://img.fril.jp/img/861902221/l/2989008403.jpg?1793386360",
-   "cd": "Vaporeon ☆"
-  },
-  {
-   "i": "rakuma:947294b24f46d7ea23058de2ad9e0e6d",
-   "t": "ポケモンカード ポケカ サンダース プレイヤーズクラブ プロモ PROMO 023/PLAY 未開封",
-   "u": "https://item.fril.jp/947294b24f46d7ea23058de2ad9e0e6d",
-   "p": 6261.38,
-   "o": "¥1,100,000",
-   "s": "Rakuma",
-   "r": "JP",
-   "c": "JP",
-   "sa": "buy",
-   "n": 1,
-   "k": [
-    "Jolteon"
-   ],
-   "f": "2026-11-01T18:56+01:00",
-   "x": "https://img.fril.jp/img/861901463/l/2989006421.jpg?1793385861",
-   "cd": "Jolteon ☆"
-  },
-  {
-   "i": "gempire:fanatics_auction-house:fanatics:WA250 Lot: 18498",
-   "t": "2005 Pokemon Japanese Play Promo 20,000 Points Holo Jolteon Gold Star #23 CGC 10 PRISTINE",
-   "u": "https://www.fanaticscollect.com/weekly/307324da-c8bf-11f1-ab02-0a58a9feac02/2005-pokemon-japanese-play-promo-20000-points-holo-jolteon-gold-star-23-cgc-10-pristine",
-   "p": 8950.95,
-   "o": "$10,000",
-   "s": "Fanatics Collect (via Gempire)",
-   "r": "AM",
-   "c": "US",
-   "g": "CGC 10",
-   "gr": "CGC",
-   "sa": "auction",
-   "k": [
-    "Jolteon"
-   ],
-   "a": "26 bids; 9h 10m 27s",
-   "f": "2026-10-28T11:35+01:00",
-   "x": "https://dilxwvfkfup17.cloudfront.net/eyJ0YWciOiIiLCJ2YWx1ZSI6IngyNWRQRDR6WTRsYk1KZG1jVHZpd1hlbGlLUFVpa1gzeEtFNGc5VUxMcEt3ZE9xSmlhQWZBc3pKaVZqSG16QjhtdzhmQy9PM0dreWw5blcrampYN1lnPT0iLCJtYWMiOiI2MDYzNTA2MGY0ZDk3NDNhYjI1Yzc0YTY4MDAxNjA4NjE1NjFmZDIwYjQ4ODhmNzRlMGMxYzlhOWIwNTA1YTE5IiwiaXYiOiI5dkEyQy9yTUhOajZtOHlLYXlGRzd3PT0ifQ==",
-   "cd": "Jolteon ☆"
-  },
-  {
    "i": "ebay:257738357076",
    "t": "2005 Pokemon Japanese Play Jolteon Gold Star Promo #023 PSA 9 New cert",
    "u": "https://www.ebay.es/itm/257738357076",
@@ -253,6 +157,29 @@
    "x": "https://i.ebayimg.com/images/g/5S4AAeSwXFhqpSh0/s-l1600.jpg",
    "e": "Unlimited",
    "cd": "Jolteon ☆",
+   "gc": 1
+  },
+  {
+   "i": "gempire:fanatics_auction-house:fanatics:WA252 Lot: 9761",
+   "t": "2005 Pokemon Japanese Play Promo 30,000 Points Holo Flareon Gold Star #24 PSA 10 GEM MINT",
+   "u": "https://www.fanaticscollect.com/weekly/698da148-c651-11f1-b5c1-0a58a9feac02/2005-pokemon-japanese-play-promo-30000-points-holo-flareon-gold-star-24-psa-10-gem-mint",
+   "p": 21943.57,
+   "o": "$24,500",
+   "s": "Fanatics Collect (via Gempire)",
+   "r": "AM",
+   "c": "US",
+   "g": "PSA 10",
+   "gr": "PSA",
+   "sa": "auction",
+   "n": 1,
+   "k": [
+    "Flareon"
+   ],
+   "a": "9 bids; 7d 10h",
+   "f": "2026-11-08T18:02+01:00",
+   "x": "https://dilxwvfkfup17.cloudfront.net/eyJ0YWciOiIiLCJ2YWx1ZSI6Im9ONVJoRndzOUxWcUEzL2srdEc4Zmd5WlB0eWFZS09RamsyRjMwSTJ0L3BWOGE0bXJEN25UajRSS0E5eFNBck1aVW1pbkFLL09OSE9wczZrQnFLSGtBPT0iLCJtYWMiOiJhOGJlYTBjMDA5NjBlYjUxYzNhODc0NzA5MjlhODZmZjA1YzU5MWJlNTgxYWE3OWZiNDdkMjZiN2VkZTBmMjVhIiwiaXYiOiJqWEdZLys0RE1kN2VPM05NT3FiV1JBPT0ifQ==",
+   "e": "Unlimited",
+   "cd": "Flareon ☆",
    "gc": 1
   },
   {
@@ -298,6 +225,26 @@
    "gc": 1
   },
   {
+   "i": "snkrdunk:snkr52448132",
+   "t": "シャワーズ☆: プロモ[PCG-P 022/PLAY](プロモーションカード「プレイヤーズけいけんち 10000~19990EXPプレゼントカード」) [PSA10]",
+   "u": "https://snkrdunk.com/apparels/93230/used/52448132",
+   "p": 32811.0,
+   "o": "¥5,800,000",
+   "s": "SNKRDUNK",
+   "r": "JP",
+   "c": "JP",
+   "g": "PSA 10",
+   "gr": "PSA",
+   "sa": "buy",
+   "n": 1,
+   "k": [
+    "Vaporeon"
+   ],
+   "f": "2026-11-08T18:02+01:00",
+   "x": "https://cdn.snkrdunk.com/apparel_used_listings/9d3fe7ee-e865-46c0-9626-9bf336ba9ff7/6580736.jpeg?size=m",
+   "cd": "Vaporeon ☆"
+  },
+  {
    "i": "ebay:307238206753",
    "t": "2005 POKEMON JPN PLAY PROMO #022 VAPOREON GOLD STAR 10,000 PTS PSA 10 HOLO SWIRL",
    "u": "https://www.ebay.es/itm/307238206753",
@@ -317,26 +264,6 @@
    "e": "Unlimited",
    "cd": "Vaporeon ☆",
    "gc": 1
-  },
-  {
-   "i": "snkrdunk:snkr52302055",
-   "t": "シャワーズ☆: プロモ[PCG-P 022/PLAY](プロモーションカード「プレイヤーズけいけんち 10000~19990EXPプレゼントカード」) [PSA10]",
-   "u": "https://snkrdunk.com/apparels/93230/used/52302055",
-   "p": 36999.09,
-   "o": "¥6,500,000",
-   "s": "SNKRDUNK",
-   "r": "JP",
-   "c": "JP",
-   "g": "PSA 10",
-   "gr": "PSA",
-   "sa": "buy",
-   "n": 1,
-   "k": [
-    "Vaporeon"
-   ],
-   "f": "2026-11-01T18:56+01:00",
-   "x": "https://cdn.snkrdunk.com/apparel_used_listings/d7e56663-acae-4011-b68b-3126de597178/6580736.jpeg?size=l",
-   "cd": "Vaporeon ☆"
   },
   {
    "i": "ebay:920052801708",
@@ -402,7 +329,7 @@
    "i": "mercari:m46250997458",
    "t": "★【PSA10】シャワーズ ゴールドスター 022/Play Promo",
    "u": "https://jp.mercari.com/item/m46250997458",
-   "p": 60299.99,
+   "p": 60099.99,
    "s": "Mercari",
    "r": "JP",
    "c": "JP",
@@ -481,6 +408,52 @@
    "gc": 1
   },
   {
+   "i": "gempire:alt_auction-house:alt:e92861b3-d7d8-4d53-b98d-1468d9335292",
+   "t": "2005 Pokemon Play Promo Japanese 50000 Exp Points Gold Star Holo Espeon #25 PSA 9",
+   "u": "https://alt.xyz/itm/e92861b3-d7d8-4d53-b98d-1468d9335292",
+   "p": 146663.68,
+   "o": "$163,750",
+   "s": "ALT (via Gempire)",
+   "r": "AM",
+   "c": "US",
+   "g": "PSA 9",
+   "gr": "PSA",
+   "sa": "auction",
+   "n": 1,
+   "k": [
+    "Espeon"
+   ],
+   "a": "18 bids; 4d 9h",
+   "f": "2026-11-08T18:02+01:00",
+   "x": "https://auction-house-radar.sam-stone838.workers.dev/image?src=https%3A%2F%2Fonlyalt-images.s3.us-east-2.amazonaws.com%2Fimage%2Fpublic%2F93dbaabd-85a5-4b64-826b-6fa7472a6024_1793816184356_1793816759408_front.png&w=520&q=82",
+   "e": "Unlimited",
+   "cd": "Espeon ☆",
+   "gc": 1
+  },
+  {
+   "i": "gempire:goldin_auction-house:goldin:3",
+   "t": "2005 Pokemon Japanese Play Promo 40,000 Points Holo #025 Gold Star Espeon - PSA GEM MT 10",
+   "u": "https://goldin.co/item/2005-pokemon-japanese-play-promo-40000-pts-gold-star-holo-025-espeon-pzt8mt",
+   "p": 188087.77,
+   "o": "$210,000",
+   "s": "Goldin (via Gempire)",
+   "r": "AM",
+   "c": "US",
+   "g": "PSA 10",
+   "gr": "PSA",
+   "sa": "auction",
+   "n": 1,
+   "k": [
+    "Espeon"
+   ],
+   "a": "9 bids; 28d 10h",
+   "f": "2026-11-08T18:02+01:00",
+   "x": "https://d2tt46f3mh26nl.cloudfront.net/public/Lots/202611-0315-5546-a7ff135d-61db-4cbd-9d0a-aed1041514ae/74848118front__b25cced5-6bb6-4ada-b76d-db05b5c43401@1x",
+   "e": "Unlimited",
+   "cd": "Espeon ☆",
+   "gc": 1
+  },
+  {
    "i": "cardmarket:765686",
    "t": "Flareon Gold Star",
    "u": "https://www.cardmarket.com/es/Pokemon/Products/Search?searchString=Flareon%20Gold%20Star",
@@ -494,7 +467,7 @@
     "Flareon"
    ],
    "f": "2026-11-07",
-   "x": "https://i.ebayimg.com/images/g/2T0AAeSwAwZq65J4/s-l225.jpg",
+   "x": "https://dilxwvfkfup17.cloudfront.net/eyJ0YWciOiIiLCJ2YWx1ZSI6Im9ONVJoRndzOUxWcUEzL2srdEc4Zmd5WlB0eWFZS09RamsyRjMwSTJ0L3BWOGE0bXJEN25UajRSS0E5eFNBck1aVW1pbkFLL09OSE9wczZrQnFLSGtBPT0iLCJtYWMiOiJhOGJlYTBjMDA5NjBlYjUxYzNhODc0NzA5MjlhODZmZjA1YzU5MWJlNTgxYWE3OWZiNDdkMjZiN2VkZTBmMjVhIiwiaXYiOiJqWEdZLys0RE1kN2VPM05NT3FiV1JBPT0ifQ==",
    "e": "Unlimited",
    "cd": "Flareon ☆",
    "gc": 1,
@@ -504,20 +477,19 @@
    "i": "ebay:900065856238",
    "t": "2005 POKEMON JAPANESE PLAY PROMO #024 FLAREON GOLD STAR PSA 10",
    "u": "https://www.ebay.es/itm/900065856238",
-   "p": 891177.79,
-   "o": "USD 995000.00",
+   "p": 892937.27,
+   "o": "USD 995,000.00",
    "s": "eBay",
    "r": "AM",
    "c": "US",
    "g": "PSA 10",
    "gr": "PSA",
    "sa": "buy",
-   "n": 1,
    "k": [
     "Flareon"
    ],
    "f": "2026-11-08T16:47+01:00",
-   "x": "https://i.ebayimg.com/images/g/2T0AAeSwAwZq65J4/s-l225.jpg",
+   "x": "https://i.ebayimg.com/images/g/2T0AAeSwAwZq65J4/s-l1600.jpg",
    "e": "Unlimited",
    "cd": "Flareon ☆",
    "gc": 1
@@ -539,6 +511,29 @@
    ],
    "f": "2026-10-25T17:40+01:00",
    "x": "https://i.ebayimg.com/images/g/K2EAAeSwUMdqvdJn/s-l1600.jpg",
+   "e": "Unlimited",
+   "cd": "Espeon ☆",
+   "gc": 1
+  },
+  {
+   "i": "gempire:alt_auction-house:alt:ff312726-6761-4462-a7f9-711a798fbf9f",
+   "t": "2005 Pokemon Play Promo Japanese 50000 Exp Points Gold Star Holo Espeon #25 PSA 10",
+   "u": "https://alt.xyz/itm/ff312726-6761-4462-a7f9-711a798fbf9f",
+   "p": 1716677.12,
+   "o": "$1,916,670",
+   "s": "ALT (via Gempire)",
+   "r": "AM",
+   "c": "US",
+   "g": "PSA 10",
+   "gr": "PSA",
+   "sa": "auction",
+   "n": 1,
+   "k": [
+    "Espeon"
+   ],
+   "a": "27 bids; 4d 9h",
+   "f": "2026-11-08T18:02+01:00",
+   "x": "https://auction-house-radar.sam-stone838.workers.dev/image?src=https%3A%2F%2Fonlyalt-images.s3.us-east-2.amazonaws.com%2Fimage%2Fpublic%2F2a6004b7-c235-42f8-acae-46cb6c2732f4_1791983892004_1792004052139_front.png&w=520&q=82",
    "e": "Unlimited",
    "cd": "Espeon ☆",
    "gc": 1
